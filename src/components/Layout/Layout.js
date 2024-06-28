@@ -2,16 +2,21 @@ import {
   AppstoreOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
+  DownOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
+import { Avatar, Dropdown, Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
+import { ReactComponent as Notif } from "assets/icons/notif.svg";
 import styled from "styled-components";
+import { useAuth } from "contexts/AuthContext";
 
 const { Header, Sider, Content } = Layout;
 const CustomLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const { logout } = useAuth();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -20,6 +25,24 @@ const CustomLayout = () => {
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
+
+  const items = [
+    {
+      label: (
+        <p
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={logout}
+        >
+          Logout
+        </p>
+      ),
+      key: "1",
+    },
+    {
+      type: "divider",
+    },
+  ];
   return (
     <Layout>
       <Header
@@ -34,10 +57,26 @@ const CustomLayout = () => {
           backgroundColor: "white",
         }}
       >
-      <p className="font-bold text-[28px]">
-        <span>Employe</span>
-        <span className="text-[#EE2E24]">Corner</span>
-      </p></Header>
+        <HeaderWrapper>
+          <p className="font-bold text-[28px]">
+            <span>Employe</span>
+            <span className="text-[#EE2E24]">Corner</span>
+          </p>
+          <RightWrapper>
+            <Notif />
+            <Dropdown
+              menu={{
+                items,
+              }}
+            >
+              <AvatarWrapper>
+                <Avatar size={24} icon={<UserOutlined />} />
+                <DownOutlined />
+              </AvatarWrapper>
+            </Dropdown>
+          </RightWrapper>
+        </HeaderWrapper>
+      </Header>
       <Layout>
         <Sider
           theme="light"
@@ -120,4 +159,22 @@ const WrapperMenuHide = styled.div`
     font-size: 16px;
     font-weight: 700;
   }
+`;
+
+const HeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+`;
+
+const RightWrapper = styled.div`
+  display: flex;
+  gap: 16px;
+`;
+
+const AvatarWrapper = styled.div`
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
 `;
