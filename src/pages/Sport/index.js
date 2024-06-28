@@ -105,7 +105,7 @@ const SportClass = () => {
       status: "Created",
     },
   ];
-  return <Table columns={columns} dataSource={data} />;
+  return <Table scroll={{x: true}} columns={columns} dataSource={data} />;
 };
 
 export default SportClass;
