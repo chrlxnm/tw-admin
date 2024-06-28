@@ -1,0 +1,26 @@
+/* src/SplashScreen.css */
+.splash-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: rgb(0, 0, 0);
+    font-size: 2em;
+    animation: fadeInOut 2s infinite; /* 2s for a full cycle (1s fade in + 1s fade out) */
+  }
+  
+  .splash-logo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  @keyframes fadeInOut {
+    0%, 100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  

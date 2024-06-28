@@ -1,0 +1,61 @@
+.login-back-icon {
+    cursor: pointer;
+}
+
+.label-back {
+    font-size: 16px;
+    font-weight: 400;
+    color:  #535353;
+}
+
+.space {
+    cursor: pointer;
+    display: flex;
+    gap: 4px;
+    align-items: center
+}
+
+.space:focus, .space:hover {
+    opacity: 75%;
+}
+
+.title-font {
+    font-size: 28px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.title-red {
+    color: red
+}
+
+.login-wrapper {
+    display: flex;
+    height: 90vh;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-header {
+    display: grid;
+    justify-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.login-content {
+    width: 80%;
+}
+
+.login-content .ant-form-item-label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.login-content .ant-btn-primary {
+    background: #FF0000;
+}
+.login-content .ant-btn-primary span {
+    font-size: 16px;
+    font-weight: 600;
+}
