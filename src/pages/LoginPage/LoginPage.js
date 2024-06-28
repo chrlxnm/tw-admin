@@ -29,8 +29,10 @@ const LoginPageSection = ({ toRegister }) => {
       <LoginContent>
         <div className="login-header">
           <LogoWrapper>
-            <Title>Employe</Title>
-            <span className="title-font title-red">Corner</span>
+            <p className="font-bold text-[28px]">
+              <span>Employe</span>
+              <span className="text-[#EE2E24]">Corner</span>
+            </p>
           </LogoWrapper>
           <Title>Login Wellness Portal</Title>
         </div>
