@@ -3,6 +3,7 @@ import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import CustomLayout from "./components/Layout/Layout";
+import DetailSportClass from "pages/Sport/Detail";
 import LoginPage from "./pages/LoginPage";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRouter";
@@ -20,6 +21,14 @@ function App() {
           element={
             <PrivateRoute>
               <SportClass />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/sport/detail/:id"
+          element={
+            <PrivateRoute>
+              <DetailSportClass />
             </PrivateRoute>
           }
         />
