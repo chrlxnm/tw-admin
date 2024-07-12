@@ -1,51 +1,16 @@
-import { Button, Popover, Space, Table, message } from "antd";
 import React, { Fragment, useState } from "react";
+import { Space, Table } from "antd";
 
+import { ReactComponent as CheckIcon } from "assets/icons/check-icon.svg";
 import Chip from "components/Chip/Chip";
-import { DownOutlined } from "@ant-design/icons";
+import { ReactComponent as CrossIcon } from "assets/icons/cross-icon.svg";
 import { Input } from "components/Input";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import styled from "styled-components";
 
 const Room = () => {
   const [status, setStatus] = useState("all");
-  const handleMenuClick = (e) => {
-    message.info("Click on menu item.");
-    console.log("click", e);
-  };
-
-  const contentAction = (record) => {
-    return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Lihat Peserta</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Lihat Detail</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Inactive</span>
-        </div>
-
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
-        </div>
-      </div>
-    );
-  };
-
+  
   const columns = [
     {
       title: "Nama Ruangan",
@@ -72,21 +37,25 @@ const Room = () => {
       title: "Aksi",
       key: "action",
       render: (_, record) => (
-        <Popover
-          content={contentAction(record)}
-          trigger="click"
-          placement="bottomRight"
+        <Space
         >
-          <Button>
+          <ButtonReject>
             <Space>
-              Atur
-              <DownOutlined />
+              <CrossIcon />
+              Reject
             </Space>
-          </Button>
-        </Popover>
+          </ButtonReject>
+          <ButtonApprove>
+            <Space>
+              <CheckIcon />
+              Approve
+            </Space>
+          </ButtonApprove>
+        </Space>
       ),
     },
   ];
+  
   const data = [
     {
       id: "1",
@@ -187,3 +156,29 @@ const ChipWrapper = styled.div`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 `;
+
+const ButtonApprove = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #00AA5B;
+  border: 1px solid #D3D3D3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+`
+
+const ButtonReject = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #FB2121;
+  border: 1px solid #D3D3D3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+`
