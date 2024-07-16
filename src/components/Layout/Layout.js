@@ -1,5 +1,4 @@
 import {
-  AppstoreOutlined,
   ArrowLeftOutlined,
   ArrowRightOutlined,
   DownOutlined,
@@ -9,7 +8,10 @@ import { Avatar, Dropdown, Layout, Menu, theme } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
+import { ReactComponent as BannerMenu } from "assets/icons/banner-menu.svg";
+import { ReactComponent as ClassMenu } from "assets/icons/class-menu.svg";
 import { ReactComponent as Notif } from "assets/icons/notif.svg";
+import { ReactComponent as RoomMenu } from "assets/icons/room-menu.svg";
 import styled from "styled-components";
 import { useAuth } from "contexts/AuthContext";
 
@@ -29,11 +31,7 @@ const CustomLayout = () => {
   const items = [
     {
       label: (
-        <p
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={logout}
-        >
+        <p target="_blank" rel="noopener noreferrer" onClick={logout}>
           Logout
         </p>
       ),
@@ -109,19 +107,31 @@ const CustomLayout = () => {
             defaultSelectedKeys={["11"]}
             items={[
               {
-                key: "1",
-                icon: <AppstoreOutlined />,
-                label: "Master",
+                key: "11",
+                icon: <ClassMenu />,
+                label: "Sport Class",
+                onClick: () => goToPage("/sport"),
+              },
+              {
+                key: "12",
+                icon: <RoomMenu />,
+                label: "Ruangan",
+                onClick: () => goToPage("/room"),
+              },
+              {
+                key: "sub1",
+                icon: <BannerMenu />,
+                label: "Banner",
                 children: [
                   {
-                    key: "11",
-                    label: "Sport Class",
-                    onClick: () => goToPage("/sport"),
+                    key: "5",
+                    label: "Hero Section",
+                    onClick: () => goToPage("/banner/hero"),
                   },
                   {
-                    key: "12",
-                    label: "Room",
-                    onClick: () => goToPage("/room"),
+                    key: "6",
+                    label: "Banner Ruangan",
+                    onClick: () => goToPage("/banner/room-banner"),
                   },
                 ],
               },

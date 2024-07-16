@@ -4,12 +4,15 @@ import React, { useState } from "react";
 
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
 import Chip from "components/Chip/Chip";
+import { ReactComponent as Clock } from "assets/icons/clock.svg";
 import { DownOutlined } from "@ant-design/icons";
+import { Poundfit } from "assets/images/class";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
+import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-const DetailSportClass = () => {
+const ParticipantSportClass = () => {
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
 
@@ -55,37 +58,30 @@ const DetailSportClass = () => {
 
   const columns = [
     {
-      title: "Nama Sport Class",
+      title: "No",
+      key: "no",
+      render: (_,record,index) => <p>{index+1}</p>,
+    },
+    {
+      title: "Nama Peserta",
       dataIndex: "name",
       key: "name",
       render: (text) => <p>{text}</p>,
     },
     {
-      title: "Tanggal Acara",
-      dataIndex: "date",
-      key: "date",
+      title: "NIK",
+      dataIndex: "nik",
+      key: "nik",
     },
     {
-      title: "Waktu Acara",
-      dataIndex: "time",
-      key: "time",
+      title: "Unit/Div",
+      dataIndex: "unit",
+      key: "unit",
     },
     {
-      title: "Kuota Peserta",
-      key: "quota",
-      dataIndex: "quota",
-    },
-    {
-      title: "Durasi",
-      dataIndex: "duration",
-      key: "duration",
-    },
-    {
-      title: "Kondisi",
-      dataIndex: "condition",
-      key: "condition",
-      render: (text) =>
-        text ? <BadgeSecondary color={text}>{text}</BadgeSecondary> : "-",
+      title: "No. HP",
+      key: "phone",
+      dataIndex: "phone",
     },
     {
       title: "Status",
@@ -115,24 +111,53 @@ const DetailSportClass = () => {
 
   const data = [
     {
-      key: "1",
-      name: "Ruang Senam",
-      time: "01/01/2024, 04:00",
-      desc: "",
-      quota: 23,
-      location: "Lantai G",
-      duration: "2 Jam",
-      status: "Created",
+      name: "Rahmat A",
+      phone: "08934785683",
+      status: "Waiting",
+      nik: "1234567890",
+      unit: "Brandcomm",
     },
     {
-      key: "2",
-      name: "Ruang Asik",
-      time: "01/05/2024, 05:00",
-      desc: "",
-      quota: 25,
-      location: "Lantai 31",
-      duration: "2 Jam",
-      status: "Created",
+      name: "Yoga S",
+      phone: "08934785683",
+      status: "Waiting",
+      nik: "1234567890",
+      unit: "Brandcomm",
+    },
+    {
+      name: "Irfan T",
+      phone: "08934785683",
+      status: "Approved",
+      nik: "1234567890",
+      unit: "Brandcomm",
+    },
+    {
+      name: "Kemal S",
+      phone: "08934785683",
+      status: "Waiting",
+      nik: "1234567890",
+      unit: "Brandcomm",
+    },
+    {
+      name: "Arif",
+      phone: "08934785683",
+      status: "Approved",
+      nik: "1234567890",
+      unit: "Brandcomm",
+    },
+    {
+      name: "Naufal Ridi",
+      phone: "08934785683",
+      status: "Rejected",
+      nik: "1234567890",
+      unit: "Brandcomm",
+    },
+    {
+      name: "Aisyah W",
+      phone: "08934785683",
+      status: "Rejected",
+      nik: "1234567890",
+      unit: "Brandcomm",
     },
   ];
   return (
@@ -142,9 +167,27 @@ const DetailSportClass = () => {
         <BackText>Lihat Peserta</BackText>
       </BackWrapper>
 
+      <ContentWrapper>
+        <Image src={Poundfit} alt="photo" />
+        <TitleWrapper>
+          <Date>Senin, 20 Mei 2024</Date>
+          <Title>Poundfit</Title>
+          <BadgeWrapper>
+            <GreyBadge>
+              <Users />
+              Kuota 20 orang
+            </GreyBadge>
+            <GreyBadge>
+              <Clock />
+              16.00-17.00
+            </GreyBadge>
+          </BadgeWrapper>
+        </TitleWrapper>
+      </ContentWrapper>
+
       <HeaderWrapper>
         <Title>Sport Class</Title>
-        <AddButton>+ Tambah Baru</AddButton>
+        <AddButton>10/20</AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -181,7 +224,7 @@ const DetailSportClass = () => {
   );
 };
 
-export default DetailSportClass;
+export default ParticipantSportClass;
 
 const Wrapper = styled.div`
   display: grid;
@@ -212,10 +255,9 @@ const Title = styled.p`
 `;
 
 const AddButton = styled.p`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
-  color: #246ee5;
+  color: black;
 `;
 
 const SearchWrapper = styled.div`
@@ -234,4 +276,57 @@ const ChipWrapper = styled.div`
   text-wrap: nowrap;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  margin-bottom: 16px;
+  gap: 8px;
+  @media screen and (max-width: 768px) {
+    display: grid;
+  }
+`;
+
+const Image = styled.img`
+  border-radius: 8px;
+  width: 250px;
+  aspect-ratio: 2 / 1;
+  height: auto;
+  object-fit: cover;
+  margin-bottom: 1px;
+`;
+
+const TitleWrapper = styled.div`
+  display: grid;
+`;
+
+const Date = styled.p`
+  font-weight: 400;
+  font-size: 14px;
+  color: #1e1e1e;
+  text-transform: uppercase;
+`;
+
+const BadgeWrapper = styled.div`
+  display: flex;
+  gap: 12px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
+`;
+
+const GreyBadge = styled.div`
+  font-size: 14px;
+  color: #535353;
+  background: #f2f2f2;
+  padding: 8px;
+  border-radius: 4px;
+  height: fit-content;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;

@@ -42,3 +42,29 @@ export const ButtonSecondary = styled(Button)`
     }
   }
 `;
+
+export const ButtonApprove = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #00aa5b;
+  border: 1px solid #d3d3d3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+`;
+
+export const ButtonReject = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #fb2121;
+  border: 1px solid #d3d3d3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+`;
