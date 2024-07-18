@@ -21,7 +21,11 @@ const getColor = ({ color }) => {
     switch (color?.toLowerCase()) {
       case 'approved':
         return '#00AA5B';
+      case 'active':
+        return '#00AA5B';
       case 'canceled':
+        return '#FB2121';
+      case 'inactive':
         return '#FB2121';
       case 'rejected':
         return '#FB2121';

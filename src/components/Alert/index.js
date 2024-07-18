@@ -44,7 +44,7 @@ const AlertWrapper = styled.div`
   background: #212121;
 
   border-radius: 8px;
-  top: 120px;
+  top: 70px;
   left: calc(50% - 255px);
   @media screen and (max-width: 768px) {
     width: 90%;

@@ -69,7 +69,7 @@ const LoginPageSection = ({ toRegister }) => {
           >
             <Input placeholder="Masukkan password" />
           </Form.Item>
-          <p className="text-[#2697A5] kp-text-[16px] cursor-pointer font-bold mb-[16px]">Lupa password?</p>
+          <p className="text-[#246EE5] kp-text-[16px] cursor-pointer font-bold mb-[16px]">Lupa password?</p>
           <div className="grid gap-2">
             <ButtonPrimary
               htmlType="submit"

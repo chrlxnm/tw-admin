@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 const Room = () => {
   const [modalProps, setModalProps] = useState({
     visible: false,
+    type: "add",
     data: undefined,
   });
   const [confirmModal, setConfirmModal] = useState({
@@ -31,27 +32,69 @@ const Room = () => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
-      title: 'Konfirmasi',
-      content: 'Apakah kamu yakin reject banner ini?',
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin reject banner ini?",
       onOk: () => {
         closeModalConfirm();
-        message.open("TEST");
-      }
-    })
-  }
+        setAlert({
+          ...alert,
+          visible: true,
+          message: "Berhasil melakukan reject.",
+        });
+      },
+    });
+  };
 
   const openApprove = () => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
-      title: 'Konfirmasi',
-      content: 'Apakah kamu yakin approve banner ini?',
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin approve banner ini?",
       onOk: () => {
         closeModalConfirm();
-        message.open("TEST");
-      }
-    })
-  }
+        setAlert({
+          ...alert,
+          visible: true,
+          message: "Berhasil melakukan Approve.",
+        });
+      },
+    });
+  };
+
+  const openDelete = () => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin delete banner ini?",
+      onOk: () => {
+        closeModalConfirm();
+        setAlert({
+          ...alert,
+          visible: true,
+          message: "Berhasil melakukan delete.",
+        });
+      },
+    });
+  };
+
+  const onChangeStatus = (type) => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: `Apakah kamu yakin ${type} banner ini?`,
+      onOk: () => {
+        closeModalConfirm();
+        setAlert({
+          ...alert,
+          visible: true,
+          message: `Berhasil melakukan ${type}.`,
+        });
+      },
+    });
+  };
 
   const closeModalConfirm = () => {
     setConfirmModal({
@@ -65,6 +108,16 @@ const Room = () => {
       ...modalProps,
       visible: true,
       data: data,
+      type: 'add'
+    });
+  };
+
+  const openDetailModal = (data) => {
+    setModalProps({
+      ...modalProps,
+      visible: true,
+      type: "detail",
+      data: data,
     });
   };
 
@@ -74,7 +127,7 @@ const Room = () => {
   });
 
   const [status, setStatus] = useState("all");
-  const [isAdmin, setIsAdmin] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -82,7 +135,7 @@ const Room = () => {
     navigate(page, { replace: true });
   };
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (event, type = "") => {
     switch (event) {
       case "detail":
         goToPage("detail/1");
@@ -91,22 +144,25 @@ const Room = () => {
         goToPage("participant/1");
         return;
       case "status":
-        message.info("Click on menu item.");
+        onChangeStatus(type);
         return;
       case "delete":
-        message.info("Click on menu item.");
+        openDelete();
         return;
       default:
         return;
     }
   };
 
-  const contentAction = (record) => {
+  const contentAction = (record, index) => {
     return (
-      <div style={{ display: "flex", flexDirection: "column" }}>
+      <div
+        style={{ display: "flex", flexDirection: "column" }}
+        onClick={() => handleContentClick(index)}
+      >
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("detail")}
+          onClick={() => openDetailModal(record)}
         >
           <span style={{ marginLeft: "0.5rem" }}>Lihat Detail</span>
         </div>
@@ -118,9 +174,13 @@ const Room = () => {
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("status")}
+          onClick={() => handleMenuClick("status", record?.condition)}
         >
-          <span style={{ marginLeft: "0.5rem" }}>Inactive</span>
+          <span style={{ marginLeft: "0.5rem" }}>
+            {record?.condition?.toLowerCase() !== "inactive"
+              ? "Inactive"
+              : "Active"}
+          </span>
         </div>
 
         <div
@@ -162,27 +222,31 @@ const Room = () => {
     {
       title: "Aksi",
       key: "action",
-      render: (_, record) =>
+      render: (_, record, index) =>
         isAdmin ? (
-          <Space>
-            <ButtonReject onClick={openReject}>
-              <Space>
-                <CrossIcon />
-                Reject
-              </Space>
-            </ButtonReject>
-            <ButtonApprove onClick={openApprove}>
-              <Space>
-                <CheckIcon />
-                Approve
-              </Space>
-            </ButtonApprove>
-          </Space>
+          record?.status?.toLowerCase() === "submitted" ? (
+            <Space>
+              <ButtonReject onClick={openReject}>
+                <Space>
+                  <CrossIcon />
+                  Reject
+                </Space>
+              </ButtonReject>
+              <ButtonApprove onClick={openApprove}>
+                <Space>
+                  <CheckIcon />
+                  Approve
+                </Space>
+              </ButtonApprove>
+            </Space>
+          ) : null
         ) : (
           <Popover
-            content={contentAction(record)}
+            content={contentAction(record, index)}
             trigger="click"
             placement="bottomRight"
+            open={popoverVisible[index]}
+            onOpenChange={(visible) => handleVisibleChange(visible, index)}
           >
             <Button>
               <Space>
@@ -195,26 +259,42 @@ const Room = () => {
     },
   ];
 
+  const [popoverVisible, setPopoverVisible] = useState({});
+
+  const handleVisibleChange = (visible, recordKey) => {
+    setPopoverVisible((prevState) => ({
+      ...prevState,
+      [recordKey]: visible,
+    }));
+  };
+
+  const handleContentClick = (recordKey) => {
+    setPopoverVisible((prevState) => ({
+      ...prevState,
+      [recordKey]: false,
+    }));
+  };
+
   const data = [
     {
       id: "1",
       name: "Ruangan Band",
       quota: 32,
-      condition: "",
+      condition: "Active",
       status: "Submitted",
     },
     {
       id: "2",
       name: "Ruang Karaoke",
       quota: 10,
-      condition: "",
+      condition: "Active",
       status: "Approved",
     },
     {
       id: "3",
       name: "Area Panggung",
       quota: 25,
-      condition: "",
+      condition: "Inactive",
       status: "Canceled",
     },
   ];
@@ -238,6 +318,7 @@ const Room = () => {
         onCancel={closeModalConfirm}
       />
       <RoomModal
+        type={modalProps.type}
         alert={alert}
         setAlert={setAlert}
         visible={modalProps?.visible}
@@ -245,14 +326,14 @@ const Room = () => {
         onClose={() => setModalProps({ ...modalProps, visible: false })}
       />
       <HeaderWrapper>
-        <Title>Sport Class</Title>
+        <Title>Ruangan</Title>
         <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input
           className="my-[16px] w-[40%]"
           size="large"
-          placeholder="Cari sport class disini . . ."
+          placeholder="Cari runagan disini . . ."
           prefix={<SearchIcon />}
         />
         <ChipWrapper>

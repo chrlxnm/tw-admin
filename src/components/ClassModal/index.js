@@ -1,20 +1,19 @@
 import {
   DatePicker,
   Form,
+  Image,
   Modal as ModalAntd,
   Select as SelectAntd,
   Upload,
 } from "antd";
 import React, { useEffect, useState } from "react";
 
-import AlertBanner from "./Alert";
 import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
 import { PlusOutlined } from "@ant-design/icons";
-import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
 
-const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
+const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -29,13 +28,12 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
   }, [visible]);
 
   const onFinish = (e) => {
-    console.log("HEEHEH", e);
-    // closeModal();
-    // setAlert({
-    //   ...alert,
-    //   visible: true,
-    //   message: "Pendaftaran ruangan billiard berhasil",
-    // });
+    closeModal();
+    setAlert({
+      ...alert,
+      visible: true,
+      message: "Pendaftaran class berhasil",
+    });
   };
 
   const normFile = (e) => {
@@ -67,10 +65,12 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
 
   return (
     <Modal
-      title="Form Sport Class"
+      title={type === "detail" ? "Detail Sport Class" : "Form Sport Class"}
       open={visible}
       onOk={closeModal}
       onCancel={closeModal}
+      centered
+      maskClosable={false}
     >
       <Wrapper>
         <RightSide>
@@ -92,7 +92,11 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
                 },
               ]}
             >
-              <Input placeholder="Tulis nama sport class" />
+              {type === "detail" ? (
+                <p>{data?.name || "-"}</p>
+              ) : (
+                <Input placeholder="Tulis nama sport class" />
+              )}
             </Form.Item>
             <Form.Item
               label="Tanggal Penggunaan"
@@ -104,11 +108,15 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
                 },
               ]}
             >
-              <DatePicker
-                placeholder="Pilih tanggal pemesanan"
-                size="large"
-                style={{ width: "100%" }}
-              />
+              {type === "detail" ? (
+                <p>{data?.date || "-"}</p>
+              ) : (
+                <DatePicker
+                  placeholder="Pilih tanggal pemesanan"
+                  size="large"
+                  style={{ width: "100%" }}
+                />
+              )}
             </Form.Item>
             <Form.Item
               label="Waktu Sport Class"
@@ -120,16 +128,20 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
                 },
               ]}
             >
-              <Select
-                size="large"
-                placeholder="Pilih waktu mulai"
-                options={[
-                  { value: "11:00", label: "11:00" },
-                  { value: "12:00", label: "12:00" },
-                  { value: "13:00", label: "13:00" },
-                  { value: "14:00", label: "14:00", disabled: true },
-                ]}
-              />
+              {type === "detail" ? (
+                <p>{data?.time || "-"}</p>
+              ) : (
+                <Select
+                  size="large"
+                  placeholder="Pilih waktu mulai"
+                  options={[
+                    { value: "11:00", label: "11:00" },
+                    { value: "12:00", label: "12:00" },
+                    { value: "13:00", label: "13:00" },
+                    { value: "14:00", label: "14:00", disabled: true },
+                  ]}
+                />
+              )}
             </Form.Item>
             <Form.Item
               label="Kuota"
@@ -141,14 +153,18 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
                 },
               ]}
             >
-              <Input
-                placeholder="Masukkan jumlah peserta disini"
-                onKeyPress={(event) => {
-                  if (!/[0-9]/.test(event.key)) {
-                    event.preventDefault();
-                  }
-                }}
-              />
+              {type === "detail" ? (
+                <p>{data?.quota || "-"}</p>
+              ) : (
+                <Input
+                  placeholder="Masukkan jumlah peserta disini"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
+                    }
+                  }}
+                />
+              )}
             </Form.Item>
             <Form.Item
               label="Upload"
@@ -156,29 +172,39 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert }) => {
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
-              <Upload {...props} listType="picture-card">
-                <button
-                  style={{
-                    border: 0,
-                    background: "none",
-                  }}
-                  type="button"
-                >
-                  <PlusOutlined />
-                  <div
+              {type === "detail" ? (
+                <Image width={200} src="https://picsum.photos/200/300" />
+              ) : (
+                <Upload {...props} listType="picture-card">
+                  <button
                     style={{
-                      marginTop: 8,
+                      border: 0,
+                      background: "none",
                     }}
+                    type="button"
                   >
-                    Upload
-                  </div>
-                </button>
-              </Upload>
+                    <PlusOutlined />
+                    <div
+                      style={{
+                        marginTop: 8,
+                      }}
+                    >
+                      Upload
+                    </div>
+                  </button>
+                </Upload>
+              )}
             </Form.Item>
             <Form.Item>
-              <ButtonPrimary htmlType="submit" className="w-full h-[42px]">
-                Kirim
-              </ButtonPrimary>
+              {type === "detail" ? (
+                <ButtonPrimary onClick={onClose} className="w-full h-[42px]">
+                  Close
+                </ButtonPrimary>
+              ) : (
+                <ButtonPrimary htmlType="submit" className="w-full h-[42px]">
+                  Kirim
+                </ButtonPrimary>
+              )}
             </Form.Item>
           </Form>
         </RightSide>
@@ -196,63 +222,18 @@ const Wrapper = styled.div`
     display: grid;
   }
 `;
-const BadgeWrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  @media screen and (max-width: 768px) {
-    width: 100%;
-  }
-`;
 
 const Select = styled(SelectAntd)``;
-
-const GreyBadge = styled.div`
-  font-size: 14px;
-  color: #535353;
-  background: #f2f2f2;
-  padding: 8px;
-  border-radius: 4px;
-  height: fit-content;
-  width: fit-content;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  @media screen and (max-width: 768px) {
-    width: 100%;
-  }
-`;
-
-const LeftSide = styled.div`
-  display: grid;
-  width: 100%;
-  grid-auto-rows: min-content;
-`;
 
 const RightSide = styled.div`
   display: grid;
   width: 100%;
   overflow: auto;
-  height: 80vh;
+  height: auto;
 
   @media screen and (max-width: 768px) {
     height: 100%;
   }
-`;
-
-const Image = styled.img`
-  border-radius: 20px;
-  width: 100%;
-  aspect-ratio: 9 / 5;
-  height: auto;
-  object-fit: cover;
-  margin-bottom: 16px;
-`;
-
-const Title = styled.p`
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
 `;
 
 const Modal = styled(ModalAntd)`

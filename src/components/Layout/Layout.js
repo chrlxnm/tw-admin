@@ -5,7 +5,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Avatar, Dropdown, Layout, Menu, theme } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 import { ReactComponent as BannerMenu } from "assets/icons/banner-menu.svg";
@@ -23,7 +23,19 @@ const CustomLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
   const navigate = useNavigate();
+  const location = useLocation();
+  const path = location.pathname.split("/");
 
+  const currentSection = () => {
+    if (path.length === 3) {
+      return path[2];
+    } else if (path.length === 2) {
+      return path[1];
+    } else {
+      return "sport";
+    }
+  };
+  
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
@@ -104,16 +116,17 @@ const CustomLayout = () => {
           <Menu
             theme="light"
             mode="inline"
-            defaultSelectedKeys={["11"]}
+            selectedKeys={currentSection()}
+            defaultSelectedKeys={["sport"]}
             items={[
               {
-                key: "11",
+                key: "sport",
                 icon: <ClassMenu />,
                 label: "Sport Class",
                 onClick: () => goToPage("/sport"),
               },
               {
-                key: "12",
+                key: "room",
                 icon: <RoomMenu />,
                 label: "Ruangan",
                 onClick: () => goToPage("/room"),
@@ -124,12 +137,12 @@ const CustomLayout = () => {
                 label: "Banner",
                 children: [
                   {
-                    key: "5",
+                    key: "hero",
                     label: "Hero Section",
                     onClick: () => goToPage("/banner/hero"),
                   },
                   {
-                    key: "6",
+                    key: "room-banner",
                     label: "Banner Ruangan",
                     onClick: () => goToPage("/banner/room-banner"),
                   },

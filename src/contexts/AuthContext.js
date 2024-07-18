@@ -9,19 +9,19 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("authToken");
+    const savedUser = localStorage.getItem("token");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
   }, []);
 
   const login = (userData) => {
-    localStorage.setItem("authToken", JSON.stringify(userData));
+    localStorage.setItem("token", JSON.stringify(userData));
     setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     setUser(null);
     navigate("/login", { replace: true });
   };

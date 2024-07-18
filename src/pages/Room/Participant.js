@@ -5,9 +5,11 @@ import React, { useState } from "react";
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
 import Chip from "components/Chip/Chip";
 import { ReactComponent as Clock } from "assets/icons/clock.svg";
+import ConfirmationModal from "components/ConfirmationModal";
 import { DownOutlined } from "@ant-design/icons";
 import { Poundfit } from "assets/images/class";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
+import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -19,9 +21,71 @@ const ParticipantRoom = () => {
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
-  const handleMenuClick = (e) => {
-    message.info("Click on menu item.");
-    console.log("click", e);
+
+  const [confirmModal, setConfirmModal] = useState({
+    visible: false,
+    title: "",
+    content: "",
+    onOk: () => {},
+  });
+
+  const [alert, setAlert] = useState({
+    message: "",
+    visible: false,
+  });
+
+  const closeModalConfirm = () => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: false,
+    });
+  };
+
+  const openReject = () => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin reject banner ini?",
+      onOk: () => {
+        closeModalConfirm();
+        setAlert({
+          ...alert,
+          visible: true,
+          message: `Berhasil melakukan reject.`,
+        });
+      },
+    });
+  };
+
+  const openApprove = () => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin approve banner ini?",
+      onOk: () => {
+        closeModalConfirm();
+        setAlert({
+          ...alert,
+          visible: true,
+          message: `Berhasil melakukan approve.`,
+        });
+      },
+    });
+  };
+
+  const handleMenuClick = (event) => {
+    switch (event) {
+      case "accept":
+        openApprove();
+        return;
+      case "reject":
+        openReject();
+        return;
+      default:
+        return;
+    }
   };
 
   const contentAction = (record) => {
@@ -29,28 +93,16 @@ const ParticipantRoom = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
+          onClick={() => handleMenuClick("accept")}
         >
-          <span style={{ marginLeft: "0.5rem" }}>Lihat Detail</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Lihat Peserta</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Inactive</span>
+          <span style={{ marginLeft: "0.5rem" }}>Accept</span>
         </div>
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={handleMenuClick}
+          onClick={() => handleMenuClick("reject")}
         >
-          <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
+          <span style={{ marginLeft: "0.5rem" }}>Reject</span>
         </div>
       </div>
     );
@@ -60,7 +112,7 @@ const ParticipantRoom = () => {
     {
       title: "No",
       key: "no",
-      render: (_,record,index) => <p>{index+1}</p>,
+      render: (_, record, index) => <p>{index + 1}</p>,
     },
     {
       title: "Nama Peserta",
@@ -126,20 +178,20 @@ const ParticipantRoom = () => {
 
   const data = [
     {
-      name: "Rahmat A", 
+      name: "Rahmat A",
       status: "Waiting",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       nik: "1234567890",
       unit: "Brandcomm",
     },
     {
       name: "Yoga S",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Waiting",
       nik: "1234567890",
@@ -147,9 +199,9 @@ const ParticipantRoom = () => {
     },
     {
       name: "Irfan T",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Approved",
       nik: "1234567890",
@@ -157,9 +209,9 @@ const ParticipantRoom = () => {
     },
     {
       name: "Kemal S",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Waiting",
       nik: "1234567890",
@@ -167,9 +219,9 @@ const ParticipantRoom = () => {
     },
     {
       name: "Arif",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Approved",
       nik: "1234567890",
@@ -177,9 +229,9 @@ const ParticipantRoom = () => {
     },
     {
       name: "Naufal Ridi",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Rejected",
       nik: "1234567890",
@@ -187,9 +239,9 @@ const ParticipantRoom = () => {
     },
     {
       name: "Aisyah W",
-      date: '25/05/2024',
-      time: '11:00',
-      duration: '3 jam',
+      date: "25/05/2024",
+      time: "11:00",
+      duration: "3 jam",
       participant: 10,
       status: "Rejected",
       nik: "1234567890",
@@ -198,7 +250,24 @@ const ParticipantRoom = () => {
   ];
   return (
     <Wrapper>
-      <BackWrapper onClick={() => goToPage("room")}>
+      <TWAlert
+        visible={alert?.visible}
+        message={alert?.message}
+        onClose={() =>
+          setAlert({
+            ...alert,
+            visible: false,
+          })
+        }
+      />
+      <ConfirmationModal
+        visible={confirmModal.visible}
+        title={confirmModal.title}
+        content={confirmModal.content}
+        onOk={confirmModal.onOk}
+        onCancel={closeModalConfirm}
+      />
+      <BackWrapper onClick={() => goToPage("/room")}>
         <BackIcon />
         <BackText>Lihat Peserta</BackText>
       </BackWrapper>

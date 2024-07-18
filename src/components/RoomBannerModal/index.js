@@ -1,4 +1,4 @@
-import { Form, Image, Modal as ModalAntd, Select as SelectAntd, Upload } from "antd";
+import { Form, Image, Modal as ModalAntd, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 
 import { ButtonPrimary } from "components/Button";
@@ -6,7 +6,7 @@ import { Input } from "components/Input";
 import { PlusOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
-const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
+const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
     setAlert({
       ...alert,
       visible: true,
-      message: "Pendaftaran ruangan berhasil",
+      message: "Pembuatan hero banner berhasil",
     });
   };
 
@@ -58,7 +58,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
 
   return (
     <Modal
-      title={type === 'detail' ? "Detail Ruangan" : "Form Ruangan"}
+      title={type === 'detail' ? "Detail Room Banner" : "Form Room Banner"}
       open={visible}
       onOk={closeModal}
       onCancel={closeModal}
@@ -76,7 +76,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
             onFinish={onFinish}
           >
             <Form.Item
-              label="Nama Ruangan"
+              label="Nama Banner"
               name="name"
               rules={[
                 {
@@ -88,35 +88,11 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
               {type === "detail" ? (
                 <p>{data?.name || "-"}</p>
               ) : (
-                <Input placeholder="Tulis nama sport class" />
-              )}
-            </Form.Item>
-
-            <Form.Item
-              label="Kuota"
-              name="quota"
-              rules={[
-                {
-                  required: true,
-                  message: "",
-                },
-              ]}
-            >
-              {type === "detail" ? (
-                <p>{data?.quota || "-"}</p>
-              ) : (
-                <Input
-                  placeholder="Masukkan kuota"
-                  onKeyPress={(event) => {
-                    if (!/[0-9]/.test(event.key)) {
-                      event.preventDefault();
-                    }
-                  }}
-                />
+                <Input placeholder="Tulis nama banner" />
               )}
             </Form.Item>
             <Form.Item
-              label="Gambar"
+              label="Upload"
               name="upload"
               valuePropName="fileList"
               getValueFromEvent={normFile}
@@ -162,7 +138,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
   );
 };
 
-export default RoomModal;
+export default HeroBannerModal;
 
 const Wrapper = styled.div`
   display: flex;

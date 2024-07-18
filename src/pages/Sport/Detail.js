@@ -137,7 +137,7 @@ const DetailSportClass = () => {
   ];
   return (
     <Wrapper>
-      <BackWrapper onClick={() => goToPage("sport")}>
+      <BackWrapper onClick={() => goToPage("/sport")}>
         <BackIcon />
         <BackText>Lihat Peserta</BackText>
       </BackWrapper>

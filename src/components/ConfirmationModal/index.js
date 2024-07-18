@@ -1,13 +1,22 @@
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
+
 import React from "react";
 
-const ConfirmationModal = ({ visible, title, content, onOK, onCancel }) => {
+const ConfirmationModal = ({ visible, title, content, onOk, onCancel }) => {
   return (
     <Modal
       title={title}
       centered
       open={visible}
-      onOk={onOK}
+      maskClosable={false}
+      footer={[
+        <Button key="back" onClick={onCancel}>
+          Return
+        </Button>,
+        <Button key="submit" type="primary" onClick={onOk}>
+          Submit
+        </Button>
+      ]}
       onCancel={onCancel}
     >
       <p>{content}</p>
