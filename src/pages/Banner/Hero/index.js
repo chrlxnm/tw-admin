@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const [status, setStatus] = useState("all");
+  // eslint-disable-next-line no-unused-vars
   const [isAdmin, setIsAdmin] = useState(false);
   const [modalProps, setModalProps] = useState({
     visible: false,

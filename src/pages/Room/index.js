@@ -1,5 +1,5 @@
 import { BadgePrimary, BadgeSecondary } from "components/Badge";
-import { Button, Popover, Space, Table, message } from "antd";
+import { Button, Popover, Space, Table } from "antd";
 import { ButtonApprove, ButtonReject } from "components/Button";
 import React, { Fragment, useState } from "react";
 
@@ -127,6 +127,7 @@ const Room = () => {
   });
 
   const [status, setStatus] = useState("all");
+  // eslint-disable-next-line no-unused-vars
   const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();

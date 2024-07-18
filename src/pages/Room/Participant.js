@@ -1,8 +1,8 @@
-import { BadgePrimary, BadgeSecondary } from "components/Badge";
-import { Button, Input, Popover, Space, Table, message } from "antd";
+import { Button, Input, Popover, Space, Table } from "antd";
 import React, { useState } from "react";
 
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
+import { BadgePrimary } from "components/Badge";
 import Chip from "components/Chip/Chip";
 import { ReactComponent as Clock } from "assets/icons/clock.svg";
 import ConfirmationModal from "components/ConfirmationModal";
@@ -402,13 +402,6 @@ const Image = styled.img`
 
 const TitleWrapper = styled.div`
   display: grid;
-`;
-
-const Date = styled.p`
-  font-weight: 400;
-  font-size: 14px;
-  color: #1e1e1e;
-  text-transform: uppercase;
 `;
 
 const BadgeWrapper = styled.div`

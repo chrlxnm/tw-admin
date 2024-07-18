@@ -1,4 +1,4 @@
-import { Form, Image, Modal as ModalAntd, Select as SelectAntd, Upload } from "antd";
+import { Form, Image, Modal as ModalAntd, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 
 import { ButtonPrimary } from "components/Button";

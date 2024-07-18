@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 const SportClass = () => {
   const [status, setStatus] = useState("all");
+  // eslint-disable-next-line no-unused-vars
   const [isAdmin, setIsAdmin] = useState(false);
   const [modalProps, setModalProps] = useState({
     visible: false,
