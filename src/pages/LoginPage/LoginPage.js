@@ -78,12 +78,6 @@ const LoginPageSection = ({ toRegister }) => {
             >
               Lanjut
             </ButtonPrimary>
-            <ButtonSecondary
-              htmlType="submit"
-              className="w-full h-[42px]"
-            >
-              Pakai Nomor HP
-            </ButtonSecondary>
           </div>
         </Form>
       </LoginContent>
