@@ -13,15 +13,18 @@ import { Input } from "components/Input";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
+import { useAuth } from "contexts/AuthContext";
+import useGetClassList from "hooks/useGetClassList";
 import { useNavigate } from "react-router-dom";
 
 const SportClass = () => {
   const [status, setStatus] = useState("all");
+  const {data, loading} = useGetClassList();
   // eslint-disable-next-line no-unused-vars
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { user } = useAuth();
   const [modalProps, setModalProps] = useState({
     visible: false,
-    type: 'add',
+    type: "add",
     data: undefined,
   });
 
@@ -30,7 +33,7 @@ const SportClass = () => {
       ...modalProps,
       visible: true,
       data: data,
-      type: 'add'
+      type: "add",
     });
   };
 
@@ -237,7 +240,7 @@ const SportClass = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        isAdmin ? (
+        user?.roles?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -289,52 +292,52 @@ const SportClass = () => {
     }));
   };
 
-  const data = [
-    {
-      key: "1",
-      name: "Ruang Senam",
-      time: "01/01/2024, 04:00",
-      desc: "",
-      condition: "Active",
-      quota: 23,
-      location: "Lantai G",
-      duration: "2 Jam",
-      status: "Canceled",
-    },
-    {
-      key: "2",
-      name: "Ruang Asik",
-      time: "01/05/2024, 05:00",
-      desc: "",
-      condition: "Inactive",
-      quota: 25,
-      location: "Lantai 31",
-      duration: "2 Jam",
-      status: "Approved",
-    },
-    {
-      key: "3",
-      name: "Ruang Main",
-      time: "01/05/2024, 05:00",
-      desc: "",
-      condition: "Inactive",
-      quota: 25,
-      location: "Lantai 31",
-      duration: "2 Jam",
-      status: "Rejected",
-    },
-    {
-      key: "4",
-      name: "Ruang Bola",
-      time: "01/05/2024, 05:00",
-      desc: "",
-      condition: "Active",
-      quota: 25,
-      location: "Lantai 31",
-      duration: "2 Jam",
-      status: "Submitted",
-    },
-  ];
+  // const data = [
+  //   {
+  //     key: "1",
+  //     name: "Ruang Senam",
+  //     time: "01/01/2024, 04:00",
+  //     desc: "",
+  //     condition: "Active",
+  //     quota: 23,
+  //     location: "Lantai G",
+  //     duration: "2 Jam",
+  //     status: "Canceled",
+  //   },
+  //   {
+  //     key: "2",
+  //     name: "Ruang Asik",
+  //     time: "01/05/2024, 05:00",
+  //     desc: "",
+  //     condition: "Inactive",
+  //     quota: 25,
+  //     location: "Lantai 31",
+  //     duration: "2 Jam",
+  //     status: "Approved",
+  //   },
+  //   {
+  //     key: "3",
+  //     name: "Ruang Main",
+  //     time: "01/05/2024, 05:00",
+  //     desc: "",
+  //     condition: "Inactive",
+  //     quota: 25,
+  //     location: "Lantai 31",
+  //     duration: "2 Jam",
+  //     status: "Rejected",
+  //   },
+  //   {
+  //     key: "4",
+  //     name: "Ruang Bola",
+  //     time: "01/05/2024, 05:00",
+  //     desc: "",
+  //     condition: "Active",
+  //     quota: 25,
+  //     location: "Lantai 31",
+  //     duration: "2 Jam",
+  //     status: "Submitted",
+  //   },
+  // ];
   return (
     <Fragment>
       <TWAlert
@@ -364,7 +367,9 @@ const SportClass = () => {
       />
       <HeaderWrapper>
         <Title>Sport Class</Title>
-        <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        {user?.roles?.includes("maker") && (
+          <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        )}
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -396,7 +401,7 @@ const SportClass = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data} />
+      <Table scroll={{ x: true }} columns={columns} dataSource={data?.data} loading={loading} />
     </Fragment>
   );
 };

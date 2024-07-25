@@ -1,8 +1,10 @@
-import { Form, Input as InputAntd } from "antd";
+import { Form, Input as InputAntd, message } from "antd";
 import React, { useState } from "react";
 
 import { ButtonPrimary } from "components/Button";
+import { LOGIN_URL } from "constant/paths";
 import styled from "styled-components";
+import twService from "utils/services";
 import { useAuth } from "contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -11,9 +13,33 @@ const LoginPageSection = ({ toRegister }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [isDisabled, setIsDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const loginService = async (event) => {
+    setLoading(true);
+    let payload = {
+      email: event.email,
+      password: event.password,
+      remember: true
+    };
+    try {
+      const response = await twService.post(LOGIN_URL, payload); // Replace with your API endpoint
+      onLogin(response?.data);
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onLogin = (event) => {
-    login(event?.username);
+    login(event);
     navigate("/beranda", { replace: true });
   };
 
@@ -26,6 +52,7 @@ const LoginPageSection = ({ toRegister }) => {
 
   return (
     <LoginWrapper>
+      {contextHolder}
       <LoginContent>
         <div className="login-header">
           <LogoWrapper>
@@ -42,12 +69,12 @@ const LoginPageSection = ({ toRegister }) => {
           layout="vertical"
           autoComplete="off"
           requiredMark={false}
-          onFinish={onLogin}
+          onFinish={loginService}
           onFieldsChange={onValuesChange}
         >
           <Form.Item
-            name="username"
-            label="Username"
+            name="email"
+            label="Email"
             rules={[
               {
                 required: true,
@@ -77,6 +104,7 @@ const LoginPageSection = ({ toRegister }) => {
               htmlType="submit"
               className="w-full h-[42px]"
               disabled={isDisabled}
+              loading={loading}
             >
               Lanjut
             </ButtonPrimary>

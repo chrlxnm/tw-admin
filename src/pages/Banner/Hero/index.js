@@ -12,12 +12,13 @@ import { Input } from "components/Input";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
+import { useAuth } from "contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const [status, setStatus] = useState("all");
   // eslint-disable-next-line no-unused-vars
-  const [isAdmin, setIsAdmin] = useState(false);
+  const {user} = useAuth();
   const [modalProps, setModalProps] = useState({
     visible: false,
     type: 'add',
@@ -213,7 +214,7 @@ const Hero = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        isAdmin ? (
+        user?.roles?.includes('checker') ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -317,7 +318,9 @@ const Hero = () => {
       />
       <HeaderWrapper>
         <Title>Hero Banner</Title>
-        <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        {user?.roles?.includes("maker") && (
+          <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        )}
       </HeaderWrapper>
       <SearchWrapper>
         <Input

@@ -13,6 +13,8 @@ import RoomModal from "components/RoomModal";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
+import { useAuth } from "contexts/AuthContext";
+import useGetRoomList from "hooks/useGetRoomList";
 import { useNavigate } from "react-router-dom";
 
 const Room = () => {
@@ -27,6 +29,9 @@ const Room = () => {
     content: "",
     onOk: null,
   });
+  const {data, loading} = useGetRoomList();
+
+  const { user } = useAuth();
 
   const openReject = () => {
     setConfirmModal({
@@ -108,7 +113,7 @@ const Room = () => {
       ...modalProps,
       visible: true,
       data: data,
-      type: 'add'
+      type: "add",
     });
   };
 
@@ -128,7 +133,6 @@ const Room = () => {
 
   const [status, setStatus] = useState("all");
   // eslint-disable-next-line no-unused-vars
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -224,7 +228,7 @@ const Room = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        isAdmin ? (
+        user?.roles?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -276,29 +280,29 @@ const Room = () => {
     }));
   };
 
-  const data = [
-    {
-      id: "1",
-      name: "Ruangan Band",
-      quota: 32,
-      condition: "Active",
-      status: "Submitted",
-    },
-    {
-      id: "2",
-      name: "Ruang Karaoke",
-      quota: 10,
-      condition: "Active",
-      status: "Approved",
-    },
-    {
-      id: "3",
-      name: "Area Panggung",
-      quota: 25,
-      condition: "Inactive",
-      status: "Canceled",
-    },
-  ];
+  // const data = [
+  //   {
+  //     id: "1",
+  //     name: "Ruangan Band",
+  //     quota: 32,
+  //     condition: "Active",
+  //     status: "Submitted",
+  //   },
+  //   {
+  //     id: "2",
+  //     name: "Ruang Karaoke",
+  //     quota: 10,
+  //     condition: "Active",
+  //     status: "Approved",
+  //   },
+  //   {
+  //     id: "3",
+  //     name: "Area Panggung",
+  //     quota: 25,
+  //     condition: "Inactive",
+  //     status: "Canceled",
+  //   },
+  // ];
   return (
     <Fragment>
       <TWAlert
@@ -328,7 +332,9 @@ const Room = () => {
       />
       <HeaderWrapper>
         <Title>Ruangan</Title>
-        <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        {user?.roles?.includes("maker") && (
+          <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
+        )}
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -360,7 +366,7 @@ const Room = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data} />
+      <Table scroll={{ x: true }} columns={columns} loading={loading} dataSource={data?.data} />
     </Fragment>
   );
 };
