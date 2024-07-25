@@ -16,11 +16,8 @@ const useGetRoomBannerList = (params) => {
         });
         setData(response.data);
       } catch (err) {
-        if (twService.isCancel(err)) {
-          console.log('Request canceled', err.message);
-        } else {
-          setError(err);
-        }
+        console.log('Request canceled', err.message);
+        setError(err);
       } finally {
         setLoading(false);
       }
