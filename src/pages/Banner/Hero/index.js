@@ -389,6 +389,7 @@ const ChipWrapper = styled.div`
   text-wrap: nowrap;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  align-items: center;
 `;
 
 const ButtonApprove = styled.div`

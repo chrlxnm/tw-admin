@@ -1,7 +1,7 @@
-import { ButtonPrimary, ButtonSecondary } from "components/Button";
 import { Form, Input as InputAntd } from "antd";
 import React, { useState } from "react";
 
+import { ButtonPrimary } from "components/Button";
 import styled from "styled-components";
 import { useAuth } from "contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +23,7 @@ const LoginPageSection = ({ toRegister }) => {
       .some(({ errors }) => errors.length > 0);
     setIsDisabled(hasErrors);
   };
-  
+
   return (
     <LoginWrapper>
       <LoginContent>
@@ -69,7 +69,9 @@ const LoginPageSection = ({ toRegister }) => {
           >
             <Input placeholder="Masukkan password" />
           </Form.Item>
-          <p className="text-[#246EE5] kp-text-[16px] cursor-pointer font-bold mb-[16px]">Lupa password?</p>
+          <p className="text-[#246EE5] kp-text-[16px] cursor-pointer font-bold mb-[16px]">
+            Lupa password?
+          </p>
           <div className="grid gap-2">
             <ButtonPrimary
               htmlType="submit"

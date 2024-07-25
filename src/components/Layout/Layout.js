@@ -10,7 +10,6 @@ import React, { useState } from "react";
 
 import { ReactComponent as BannerMenu } from "assets/icons/banner-menu.svg";
 import { ReactComponent as ClassMenu } from "assets/icons/class-menu.svg";
-import { ReactComponent as Notif } from "assets/icons/notif.svg";
 import { ReactComponent as RoomMenu } from "assets/icons/room-menu.svg";
 import styled from "styled-components";
 import { useAuth } from "contexts/AuthContext";
@@ -73,7 +72,6 @@ const CustomLayout = () => {
             <span className="text-[#EE2E24]">Corner</span>
           </p>
           <RightWrapper>
-            <Notif />
             <Dropdown
               menu={{
                 items,

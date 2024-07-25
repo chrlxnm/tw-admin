@@ -332,7 +332,6 @@ export default ParticipantRoom;
 
 const Wrapper = styled.div`
   display: grid;
-  gap: 16px;
   cursor: pointer;
 `;
 
@@ -340,6 +339,7 @@ const BackWrapper = styled.div`
   display: flex;
   gap: 8px;
   align-items: center;
+  margin-bottom: 16px;
 `;
 
 const BackText = styled.p`
@@ -350,7 +350,6 @@ const BackText = styled.p`
 const HeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
 `;
 
 const Title = styled.p`
@@ -380,12 +379,13 @@ const ChipWrapper = styled.div`
   text-wrap: nowrap;
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+  align-items: center;
 `;
 
 const ContentWrapper = styled.div`
   display: flex;
   margin-bottom: 16px;
-  gap: 8px;
+  gap: 16px;
   @media screen and (max-width: 768px) {
     display: grid;
   }

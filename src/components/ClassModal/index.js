@@ -242,6 +242,7 @@ const Modal = styled(ModalAntd)`
   }
   .ant-modal-body {
     max-height: calc(90vh - 72px);
+    overflow: auto;
   }
 
   &.ant-modal-wrap {
