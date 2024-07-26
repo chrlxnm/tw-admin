@@ -94,7 +94,7 @@ const LoginPageSection = ({ toRegister }) => {
               },
             ]}
           >
-            <Input placeholder="Masukkan password" />
+            <InputPass placeholder="Masukkan password" />
           </Form.Item>
           <p className="text-[#246EE5] kp-text-[16px] cursor-pointer font-bold mb-[16px]">
             Lupa password?
@@ -139,6 +139,10 @@ const LoginContent = styled.div`
 `;
 
 const Input = styled(InputAntd)`
+  height: 42px;
+`;
+
+const InputPass = styled(InputAntd.Password)`
   height: 42px;
 `;
 
