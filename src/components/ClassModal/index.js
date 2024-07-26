@@ -1,20 +1,32 @@
 import {
+  Button,
   DatePicker,
   Form,
   Image,
   Modal as ModalAntd,
   Select as SelectAntd,
   Upload,
+  message,
 } from "antd";
 import React, { useEffect, useState } from "react";
 
 import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
+import { MinusCircleOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
 import styled from "styled-components";
+import twService from "utils/services";
 
 const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [loading, setLoading] = useState(false);
+
+  const disableDate = (current) => {
+    // Disable dates before today
+    return current && current < moment().startOf("day");
+  };
 
   useEffect(() => {
     if (visible) {
@@ -27,13 +39,33 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
     };
   }, [visible]);
 
-  const onFinish = (e) => {
-    closeModal();
-    setAlert({
-      ...alert,
-      visible: true,
-      message: "Pendaftaran class berhasil",
-    });
+  const onFinish = async (payload) => {
+    let body = {
+      ...payload,
+      quota: Number(payload.quota),
+      date: payload.date
+        ? payload.date.map((item) => item.format("YYYY-MM-DD"))
+        : [],
+    };
+    setLoading(true);
+    try {
+      await twService.post(`schedules`, body); // Replace with your API endpoint
+      closeModal();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Pendaftaran class berhasil",
+      });
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const normFile = (e) => {
@@ -72,6 +104,7 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
       centered
       maskClosable={false}
     >
+      {contextHolder}
       <Wrapper>
         <RightSide>
           <Form
@@ -81,6 +114,7 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
             autoComplete="off"
             requiredMark={false}
             onFinish={onFinish}
+            initialValues={{ date: [undefined], time: [undefined] }}
           >
             <Form.Item
               label="Nama Sport Class"
@@ -98,51 +132,137 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
                 <Input placeholder="Tulis nama sport class" />
               )}
             </Form.Item>
-            <Form.Item
-              label="Tanggal Penggunaan"
-              name="date"
-              rules={[
-                {
-                  required: true,
-                  message: "",
-                },
-              ]}
-            >
-              {type === "detail" ? (
-                <p>{data?.date || "-"}</p>
-              ) : (
-                <DatePicker
-                  placeholder="Pilih tanggal pemesanan"
-                  size="large"
-                  style={{ width: "100%" }}
-                />
+
+            <p>Tanggal Penggunaan</p>
+
+            <Form.List name="date" label="Tanggal Penggunaan">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(
+                    ({ key, name, fieldKey, ...restField }, index) => (
+                      <Space
+                        key={key}
+                        style={{
+                          display: "flex",
+                          marginBottom: 8,
+                        }}
+                        align="baseline"
+                      >
+                        <Form.Item
+                          noStyle
+                          {...restField}
+                          name={[name]}
+                          fieldKey={[fieldKey]}
+                          style={{
+                            width: "100%",
+                          }}
+                          rules={[
+                            {
+                              required: true,
+                              message: "",
+                            },
+                          ]}
+                        >
+                          <DatePicker
+                            placeholder="Pilih tanggal pemesanan"
+                            size="large"
+                            format="DD/MM/YYYY"
+                            disabledDate={disableDate}
+                            style={{ width: "100%" }}
+                          />
+                        </Form.Item>
+                        {fields.length > 1 ? (
+                          <MinusCircleOutlined onClick={() => remove(name)} />
+                        ) : null}
+                      </Space>
+                    )
+                  )}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Tambah tanggal
+                    </Button>
+                  </Form.Item>
+                </>
               )}
-            </Form.Item>
-            <Form.Item
-              label="Waktu Sport Class"
-              name="time"
-              rules={[
-                {
-                  required: true,
-                  message: "",
-                },
-              ]}
-            >
-              {type === "detail" ? (
-                <p>{data?.time || "-"}</p>
-              ) : (
-                <Select
-                  size="large"
-                  placeholder="Pilih waktu mulai"
-                  options={[
-                    { value: "11:00", label: "11:00" },
-                    { value: "12:00", label: "12:00" },
-                    { value: "13:00", label: "13:00" },
-                    { value: "14:00", label: "14:00", disabled: true },
-                  ]}
-                />
+            </Form.List>
+
+            <p>Waktu Sport Class</p>
+
+            <Form.List name="time">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(
+                    ({ key, name, fieldKey, ...restField }, index) => (
+                      <Space
+                        key={key}
+                        style={{
+                          display: "flex",
+                          marginBottom: 8,
+                        }}
+                        align="baseline"
+                      >
+                        <Form.Item
+                          noStyle
+                          {...restField}
+                          name={[name]}
+                          fieldKey={[fieldKey]}
+                          style={{
+                            width: "100%",
+                          }}
+                          rules={[
+                            {
+                              required: true,
+                              message: "",
+                            },
+                          ]}
+                        >
+                          {type === "detail" ? (
+                            <p>{data?.time || "-"}</p>
+                          ) : (
+                            <Select
+                              style={{
+                                width: "100%",
+                              }}
+                              size="large"
+                              placeholder="Pilih waktu mulai"
+                              options={[
+                                { value: "11:00", label: "11:00" },
+                                { value: "12:00", label: "12:00" },
+                                { value: "13:00", label: "13:00" },
+                                {
+                                  value: "14:00",
+                                  label: "14:00",
+                                  disabled: true,
+                                },
+                              ]}
+                            />
+                          )}
+                        </Form.Item>
+                        {fields.length > 1 ? (
+                          <MinusCircleOutlined onClick={() => remove(name)} />
+                        ) : null}
+                      </Space>
+                    )
+                  )}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Tambah waktu
+                    </Button>
+                  </Form.Item>
+                </>
               )}
-            </Form.Item>
+            </Form.List>
+
             <Form.Item
               label="Kuota"
               name="quota"
@@ -168,7 +288,7 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
             </Form.Item>
             <Form.Item
               label="Upload"
-              name="upload"
+              name="images"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
@@ -201,7 +321,11 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
                   Close
                 </ButtonPrimary>
               ) : (
-                <ButtonPrimary htmlType="submit" className="w-full h-[42px]">
+                <ButtonPrimary
+                  loading={loading}
+                  htmlType="submit"
+                  className="w-full h-[42px]"
+                >
                   Kirim
                 </ButtonPrimary>
               )}
@@ -221,6 +345,12 @@ const Wrapper = styled.div`
   @media screen and (max-width: 768px) {
     display: grid;
   }
+`;
+
+const Space = styled.div`
+  display: flex;
+  gap: 8px;
+  width: 100%;
 `;
 
 const Select = styled(SelectAntd)``;
