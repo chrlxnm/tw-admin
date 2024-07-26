@@ -13,7 +13,6 @@ import RoomModal from "components/RoomModal";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
-import { useAuth } from "contexts/AuthContext";
 import useGetRoomList from "hooks/useGetRoomList";
 import { useNavigate } from "react-router-dom";
 
@@ -29,9 +28,10 @@ const Room = () => {
     content: "",
     onOk: null,
   });
-  const {data, loading} = useGetRoomList();
 
-  const { user } = useAuth();
+  const [params, setParams] = useState({ name: undefined, status: undefined });
+
+  const { data, loading } = useGetRoomList(params);
 
   const openReject = () => {
     setConfirmModal({
@@ -228,7 +228,7 @@ const Room = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        user?.roles?.includes("checker") ? (
+        localStorage.getItem("role")?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -332,7 +332,7 @@ const Room = () => {
       />
       <HeaderWrapper>
         <Title>Ruangan</Title>
-        {user?.roles?.includes("maker") && (
+        {localStorage.getItem("role")?.includes("maker") && (
           <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
         )}
       </HeaderWrapper>
@@ -340,7 +340,8 @@ const Room = () => {
         <Input
           className="my-[16px] w-[40%]"
           size="large"
-          placeholder="Cari runagan disini . . ."
+          onChange={(e) => setParams({ ...params, name: e.target.value })}
+          placeholder="Cari ruangan disini . . ."
           prefix={<SearchIcon />}
         />
         <ChipWrapper>
@@ -366,7 +367,12 @@ const Room = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} loading={loading} dataSource={data?.data} />
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        loading={loading}
+        dataSource={data?.data}
+      />
     </Fragment>
   );
 };

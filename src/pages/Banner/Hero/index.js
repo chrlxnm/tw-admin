@@ -214,7 +214,7 @@ const Hero = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        user?.roles?.includes('checker') ? (
+        localStorage.getItem("role")?.includes('checker') ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -318,7 +318,7 @@ const Hero = () => {
       />
       <HeaderWrapper>
         <Title>Hero Banner</Title>
-        {user?.roles?.includes("maker") && (
+        {localStorage.getItem("role")?.includes("maker") && (
           <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
         )}
       </HeaderWrapper>
