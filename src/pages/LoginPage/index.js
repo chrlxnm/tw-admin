@@ -18,8 +18,14 @@ const LoginPage = () => {
             <BigTitle>Selamat datang, Rekans!</BigTitle>
             <Description>Tetap semangat dan selamat bekerja!</Description>
           </div>
-          <BigTitle>Mari semangat!</BigTitle>
-          <BigTitle>Bekerja</BigTitle>
+          <div className="grid w-[60%]">
+            <BigTitle>Selamat datang, Rekans!</BigTitle>
+            <Description>Tetap semangat dan selamat bekerja!</Description>
+          </div>
+          <div className="grid w-[60%]">
+            <BigTitle>Selamat datang, Rekans!</BigTitle>
+            <Description>Tetap semangat dan selamat bekerja!</Description>
+          </div>
         </Carousel>
       </LeftWrapper>
       <RightWrapper>

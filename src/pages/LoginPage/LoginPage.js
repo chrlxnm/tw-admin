@@ -80,6 +80,10 @@ const LoginPageSection = ({ toRegister }) => {
                 required: true,
                 message: "",
               },
+              {
+                type: "email",
+                message: "Format email tidak valid!",
+              },
             ]}
           >
             <Input placeholder="Masukkan email" />

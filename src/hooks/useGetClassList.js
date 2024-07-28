@@ -10,6 +10,7 @@ const useGetClassList = (params) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       try {
         const response = await twService.get(CLASS_LIST_URL, {
             params
@@ -22,8 +23,10 @@ const useGetClassList = (params) => {
         setLoading(false);
       }
     };
-    fetchData();
-    
+    const delayDebounceFn = setTimeout(() => {
+      fetchData();
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
   }, [params]);
 
   return { data, loading, error };

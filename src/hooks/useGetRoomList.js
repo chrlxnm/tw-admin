@@ -5,11 +5,12 @@ import twService from 'utils/services';
 
 const useGetRoomList = (params) => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await twService.get(ROOM_LIST_URL, {
             params

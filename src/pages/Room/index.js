@@ -280,29 +280,6 @@ const Room = () => {
     }));
   };
 
-  // const data = [
-  //   {
-  //     id: "1",
-  //     name: "Ruangan Band",
-  //     quota: 32,
-  //     condition: "Active",
-  //     status: "Submitted",
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Ruang Karaoke",
-  //     quota: 10,
-  //     condition: "Active",
-  //     status: "Approved",
-  //   },
-  //   {
-  //     id: "3",
-  //     name: "Area Panggung",
-  //     quota: 25,
-  //     condition: "Inactive",
-  //     status: "Canceled",
-  //   },
-  // ];
   return (
     <Fragment>
       <TWAlert

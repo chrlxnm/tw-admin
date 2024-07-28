@@ -10,6 +10,7 @@ const useGetClassList = (params) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true)
       try {
         const response = await twService.get(CLASS_LIST_URL, {
             params
