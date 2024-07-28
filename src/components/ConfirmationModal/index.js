@@ -2,7 +2,7 @@ import { Button, Modal } from "antd";
 
 import React from "react";
 
-const ConfirmationModal = ({ visible, title, content, onOk, onCancel }) => {
+const ConfirmationModal = ({ visible, title, content, onOk, onCancel, loading }) => {
   return (
     <Modal
       title={title}
@@ -13,7 +13,7 @@ const ConfirmationModal = ({ visible, title, content, onOk, onCancel }) => {
         <Button key="back" onClick={onCancel}>
           Return
         </Button>,
-        <Button key="submit" type="primary" onClick={onOk}>
+        <Button key="submit" type="primary" onClick={onOk} loading={loading}>
           Submit
         </Button>
       ]}

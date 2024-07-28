@@ -1,5 +1,5 @@
 import { BadgePrimary, BadgeSecondary } from "components/Badge";
-import { Button, Popover, Space, Table } from "antd";
+import { Button, Popover, Space, Table, message } from "antd";
 import { ButtonApprove, ButtonReject } from "components/Button";
 import React, { Fragment, useState } from "react";
 
@@ -13,13 +13,16 @@ import { Input } from "components/Input";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
+import twService from "utils/services";
 import useGetClassList from "hooks/useGetClassList";
 import { useNavigate } from "react-router-dom";
 
 const SportClass = () => {
   const [status, setStatus] = useState("all");
-  const [params, setParams] = useState({ name: "" });
-  const {data, loading} = useGetClassList(params);
+  const [loadingModal, setLoadingModal] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [params, setParams] = useState({ name: "", page: 1 });
+  const { data, loading, fetchData } = useGetClassList(params);
   // eslint-disable-next-line no-unused-vars
   const [modalProps, setModalProps] = useState({
     visible: false,
@@ -27,10 +30,86 @@ const SportClass = () => {
     data: undefined,
   });
   const onSearch = (event) => {
-      setParams({
-        ...params,
-        name: event.target.value,
+    setParams({
+      ...params,
+      name: event.target.value,
+    });
+  };
+
+  const handleTableChange = (event) => {
+    setParams({
+      ...params,
+      page: event?.current,
+    });
+  };
+
+  const onApprove = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`schedules/${id}/approve`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Approve.",
       });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onReject = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`schedules/${id}/reject`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Reject.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onDelete = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.delete(`schedules/${id}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan delete, menunggu approval checker.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
   };
 
   const openModal = (data) => {
@@ -58,54 +137,33 @@ const SportClass = () => {
     onOk: () => {},
   });
 
-  const openReject = () => {
+  const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin reject banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan reject.",
-        });
-      },
+      onOk: () => onReject(id),
     });
   };
 
-  const openApprove = () => {
+  const openApprove = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin approve banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan Approve.",
-        });
-      },
+      onOk: () => onApprove(id),
     });
   };
 
-  const openDelete = () => {
+  const openDelete = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin delete banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan delete.",
-        });
-      },
+      onOk: () => onDelete(id),
     });
   };
 
@@ -143,19 +201,16 @@ const SportClass = () => {
     navigate(page, { replace: true });
   };
 
-  const handleMenuClick = (event, type = "") => {
+  const handleMenuClick = (record, event, type = "") => {
     switch (event) {
-      case "detail":
-        goToPage("detail/1");
-        return;
       case "participant":
-        goToPage("participant/1");
+        goToPage(`participant/${record?.id}`);
         return;
       case "status":
         onChangeStatus(type);
         return;
       case "delete":
-        openDelete();
+        openDelete(record?.id);
         return;
       default:
         return;
@@ -176,13 +231,13 @@ const SportClass = () => {
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("participant")}
+          onClick={() => handleMenuClick(record, "participant")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Lihat Peserta</span>
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("status", record?.condition)}
+          onClick={() => handleMenuClick(record, "status", record?.condition)}
         >
           <span style={{ marginLeft: "0.5rem" }}>
             {record?.condition?.toLowerCase() !== "inactive"
@@ -193,7 +248,7 @@ const SportClass = () => {
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("delete")}
+          onClick={() => handleMenuClick(record, "delete")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
         </div>
@@ -248,13 +303,13 @@ const SportClass = () => {
         localStorage.getItem("role")?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
-              <ButtonReject onClick={openReject}>
+              <ButtonReject onClick={() => openReject(record?.id)}>
                 <Space>
                   <CrossIcon />
                   Reject
                 </Space>
               </ButtonReject>
-              <ButtonApprove onClick={openApprove}>
+              <ButtonApprove onClick={() => openApprove(record.id)}>
                 <Space>
                   <CheckIcon />
                   Approve
@@ -296,9 +351,10 @@ const SportClass = () => {
       [recordKey]: false,
     }));
   };
-  
+
   return (
     <Fragment>
+      {contextHolder}
       <TWAlert
         visible={alert?.visible}
         message={alert?.message}
@@ -315,6 +371,7 @@ const SportClass = () => {
         content={confirmModal.content}
         onOk={confirmModal.onOk}
         onCancel={closeModalConfirm}
+        loading={loadingModal}
       />
       <ClassModal
         alert={alert}
@@ -323,6 +380,7 @@ const SportClass = () => {
         visible={modalProps?.visible}
         data={modalProps?.data}
         onClose={() => setModalProps({ ...modalProps, visible: false })}
+        refetch={fetchData}
       />
       <HeaderWrapper>
         <Title>Sport Class</Title>
@@ -361,7 +419,17 @@ const SportClass = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data?.data} loading={loading} />
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        dataSource={data?.data}
+        loading={loading}
+        pagination={{
+          current: params?.page,
+          total: data?.meta?.total,
+        }}
+        onChange={handleTableChange}
+      />
     </Fragment>
   );
 };

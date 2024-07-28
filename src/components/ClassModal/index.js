@@ -18,7 +18,7 @@ import moment from "moment";
 import styled from "styled-components";
 import twService from "utils/services";
 
-const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
+const ClassModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
@@ -56,6 +56,7 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type }) => {
         visible: true,
         message: "Pendaftaran class berhasil",
       });
+      refetch();
     } catch (error) {
       messageApi.open({
         type: "error",

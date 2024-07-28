@@ -1,5 +1,5 @@
 import { BadgePrimary, BadgeSecondary } from "components/Badge";
-import { Button, Popover, Space, Table } from "antd";
+import { Button, Popover, Space, Table, message } from "antd";
 import { ButtonApprove, ButtonReject } from "components/Button";
 import React, { Fragment, useState } from "react";
 
@@ -13,6 +13,7 @@ import RoomModal from "components/RoomModal";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
+import twService from "utils/services";
 import useGetRoomList from "hooks/useGetRoomList";
 import { useNavigate } from "react-router-dom";
 
@@ -29,62 +30,124 @@ const Room = () => {
     onOk: null,
   });
 
-  const [params, setParams] = useState({ name: undefined, status: undefined });
+  const [params, setParams] = useState({
+    name: undefined,
+    status: undefined,
+    page: 1
+  });
 
-  const { data, loading } = useGetRoomList(params);
+  const handleTableChange = (event) => {
+    setParams({
+      ...params,
+      page: event?.current,
+    });
+  };
 
-  const openReject = () => {
+  const { data, loading, fetchDataList } = useGetRoomList(params);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const [loadingModal, setLoadingModal] = useState(false);
+
+  const onDelete = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.delete(`rooms/${id}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan delete, menunggu approval checker.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onApprove = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`rooms/${id}/approve`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Approve.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onReject = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`rooms/${id}/reject`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Reject.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin reject banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan reject.",
-        });
-      },
+      onOk: () => onReject(id),
     });
   };
 
-  const openApprove = () => {
+  const openApprove = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin approve banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan Approve.",
-        });
-      },
+      onOk: () => onApprove(id),
     });
   };
 
-  const openDelete = () => {
+  const openDelete = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin delete banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan delete.",
-        });
-      },
+      onOk: () => onDelete(id),
     });
   };
 
-  const onChangeStatus = (type) => {
+  const openChangeStatus = (type) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
@@ -140,19 +203,16 @@ const Room = () => {
     navigate(page, { replace: true });
   };
 
-  const handleMenuClick = (event, type = "") => {
+  const handleMenuClick = (record, event, type = "") => {
     switch (event) {
-      case "detail":
-        goToPage("detail/1");
-        return;
       case "participant":
-        goToPage("participant/1");
+        goToPage(`participant/${record?.id}`);
         return;
       case "status":
-        onChangeStatus(type);
+        openChangeStatus(type);
         return;
       case "delete":
-        openDelete();
+        openDelete(record?.id);
         return;
       default:
         return;
@@ -173,13 +233,13 @@ const Room = () => {
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("participant")}
+          onClick={() => handleMenuClick(record, "participant")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Lihat Peserta</span>
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("status", record?.condition)}
+          onClick={() => handleMenuClick(record, "status", record?.condition)}
         >
           <span style={{ marginLeft: "0.5rem" }}>
             {record?.condition?.toLowerCase() !== "inactive"
@@ -190,7 +250,7 @@ const Room = () => {
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("delete")}
+          onClick={() => handleMenuClick(record, "delete")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
         </div>
@@ -231,13 +291,13 @@ const Room = () => {
         localStorage.getItem("role")?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
-              <ButtonReject onClick={openReject}>
+              <ButtonReject onClick={() => openReject(record?.id)}>
                 <Space>
                   <CrossIcon />
                   Reject
                 </Space>
               </ButtonReject>
-              <ButtonApprove onClick={openApprove}>
+              <ButtonApprove onClick={() => openApprove(record.id)}>
                 <Space>
                   <CheckIcon />
                   Approve
@@ -282,6 +342,7 @@ const Room = () => {
 
   return (
     <Fragment>
+      {contextHolder}
       <TWAlert
         visible={alert?.visible}
         message={alert?.message}
@@ -292,13 +353,16 @@ const Room = () => {
           })
         }
       />
+
       <ConfirmationModal
         visible={confirmModal.visible}
         title={confirmModal.title}
         content={confirmModal.content}
         onOk={confirmModal.onOk}
         onCancel={closeModalConfirm}
+        loading={loadingModal}
       />
+
       <RoomModal
         type={modalProps.type}
         alert={alert}
@@ -349,6 +413,11 @@ const Room = () => {
         columns={columns}
         loading={loading}
         dataSource={data?.data}
+        pagination={{
+          total: data?.meta?.total,
+          current: params?.page,
+        }}
+        onChange={handleTableChange}
       />
     </Fragment>
   );
