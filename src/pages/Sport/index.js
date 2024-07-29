@@ -112,6 +112,31 @@ const SportClass = () => {
     }
   };
 
+  const fetchChangeStatus = async (id, type) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`schedules/${id}/${type}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: `Berhasil melakukan ${
+          type?.toLowerCase() === "activate" ? "aktivasi" : "deaktivasi"
+        }.`,
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
   const openModal = (data) => {
     setModalProps({
       ...modalProps,
@@ -167,20 +192,17 @@ const SportClass = () => {
     });
   };
 
-  const onChangeStatus = (type) => {
+  const onChangeStatus = (id, type) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: `Apakah kamu yakin ${type} banner ini?`,
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan ${type}.`,
-        });
-      },
+      content: `Apakah kamu yakin ${type?.toLowerCase() === "active" ? "deactivate" : "activate"} kelas ini?`,
+      onOk: () =>
+        fetchChangeStatus(
+          id,
+          type?.toLowerCase() === "active" ? "deactivate" : "activate"
+        ),
     });
   };
 
@@ -207,7 +229,7 @@ const SportClass = () => {
         goToPage(`participant/${record?.id}`);
         return;
       case "status":
-        onChangeStatus(type);
+        onChangeStatus(record?.id, type);
         return;
       case "delete":
         openDelete(record?.id);

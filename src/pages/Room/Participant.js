@@ -1,5 +1,6 @@
 import { Button, Input, Popover, Space, Table } from "antd";
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
 import { BadgePrimary } from "components/Badge";
@@ -12,11 +13,13 @@ import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import useGetRoomBookingList from "hooks/useGetRoomBookingList";
 
 const ParticipantRoom = () => {
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
+  const { id } = useParams();
+  const {data: bookingList, loading: bookingLoading } = useGetRoomBookingList(id);
 
   const goToPage = (page) => {
     navigate(page, { replace: true });
@@ -176,78 +179,6 @@ const ParticipantRoom = () => {
     },
   ];
 
-  const data = [
-    {
-      name: "Rahmat A",
-      status: "Waiting",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Yoga S",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Waiting",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Irfan T",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Approved",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Kemal S",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Waiting",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Arif",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Approved",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Naufal Ridi",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Rejected",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Aisyah W",
-      date: "25/05/2024",
-      time: "11:00",
-      duration: "3 jam",
-      participant: 10,
-      status: "Rejected",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-  ];
   return (
     <Wrapper>
       <TWAlert
@@ -323,7 +254,7 @@ const ParticipantRoom = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data} />
+      <Table scroll={{ x: true }} columns={columns} dataSource={bookingList?.data} loading={bookingLoading} />
     </Wrapper>
   );
 };

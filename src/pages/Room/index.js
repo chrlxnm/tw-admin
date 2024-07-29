@@ -33,7 +33,7 @@ const Room = () => {
   const [params, setParams] = useState({
     name: undefined,
     status: undefined,
-    page: 1
+    page: 1,
   });
 
   const handleTableChange = (event) => {
@@ -117,6 +117,31 @@ const Room = () => {
     }
   };
 
+  const fetchChangeStatus = async (id, type) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`schedules/${id}/${type}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: `Berhasil melakukan ${
+          type?.toLowerCase() === "activate" ? "aktivasi" : "deaktivasi"
+        }.`,
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
   const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
@@ -147,20 +172,19 @@ const Room = () => {
     });
   };
 
-  const openChangeStatus = (type) => {
+  const openChangeStatus = (id, type) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: `Apakah kamu yakin ${type} banner ini?`,
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan ${type}.`,
-        });
-      },
+      content: `Apakah kamu yakin ${
+        type?.toLowerCase() === "active" ? "deactivate" : "activate"
+      } ruangan ini?`,
+      onOk: () =>
+        fetchChangeStatus(
+          id,
+          type?.toLowerCase() === "active" ? "deactivate" : "activate"
+        ),
     });
   };
 
@@ -209,7 +233,7 @@ const Room = () => {
         goToPage(`participant/${record?.id}`);
         return;
       case "status":
-        openChangeStatus(type);
+        openChangeStatus(record?.id, type);
         return;
       case "delete":
         openDelete(record?.id);

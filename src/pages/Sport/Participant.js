@@ -1,5 +1,6 @@
 import { Button, Input, Popover, Space, Table } from "antd";
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
 import { BadgePrimary } from "components/Badge";
@@ -12,9 +13,11 @@ import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 
 const ParticipantSportClass = () => {
+  const { id } = useParams();
+  const {data: participantList, loading: participantLoading } = useGetClassParticipantList(id);
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
 
@@ -161,57 +164,6 @@ const ParticipantSportClass = () => {
     },
   ];
 
-  const data = [
-    {
-      name: "Rahmat A",
-      phone: "08934785683",
-      status: "Waiting",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Yoga S",
-      phone: "08934785683",
-      status: "Waiting",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Irfan T",
-      phone: "08934785683",
-      status: "Approved",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Kemal S",
-      phone: "08934785683",
-      status: "Waiting",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Arif",
-      phone: "08934785683",
-      status: "Approved",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Naufal Ridi",
-      phone: "08934785683",
-      status: "Rejected",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-    {
-      name: "Aisyah W",
-      phone: "08934785683",
-      status: "Rejected",
-      nik: "1234567890",
-      unit: "Brandcomm",
-    },
-  ];
   return (
     <Wrapper>
     <TWAlert
@@ -288,7 +240,7 @@ const ParticipantSportClass = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data} />
+      <Table scroll={{ x: true }} columns={columns} dataSource={participantList?.data} loading={participantLoading} />
     </Wrapper>
   );
 };
