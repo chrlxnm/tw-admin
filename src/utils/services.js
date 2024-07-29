@@ -1,11 +1,14 @@
-import { BASE_URL } from 'constant/paths';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // Create a context to manage loading state
 
+function getBaseUrl(){
+  return `${window.location.origin}/api/v1/admin/`
+}
+
 const twService = axios.create({
-  baseURL: BASE_URL, // Replace with your API base URL
+  baseURL: getBaseUrl(), // Replace with your API base URL
   timeout: 10000, // Request timeout
   headers: {
     'Content-Type': 'application/json',
