@@ -18,7 +18,15 @@ import moment from "moment";
 import styled from "styled-components";
 import twService from "utils/services";
 
-const ClassModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) => {
+const ClassModal = ({
+  data,
+  visible,
+  onClose,
+  setAlert,
+  alert,
+  type,
+  refetch,
+}) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
@@ -134,135 +142,143 @@ const ClassModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) 
               )}
             </Form.Item>
 
-            <p>Tanggal Penggunaan</p>
+            <p className="font-bold">Tanggal Penggunaan</p>
 
-            <Form.List name="date" label="Tanggal Penggunaan">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(
-                    ({ key, name, fieldKey, ...restField }, index) => (
-                      <Space
-                        key={key}
-                        style={{
-                          display: "flex",
-                          marginBottom: 8,
-                        }}
-                        align="baseline"
-                      >
-                        <Form.Item
-                          noStyle
-                          {...restField}
-                          name={[name]}
-                          fieldKey={[fieldKey]}
+            {type === "detail" ? (
+              <p className="mb-[24px]">{data?.date || "-"}</p>
+            ) : (
+              <Form.List name="date" label="Tanggal Penggunaan">
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(
+                      ({ key, name, fieldKey, ...restField }, index) => (
+                        <Space
+                          key={key}
                           style={{
-                            width: "100%",
+                            display: "flex",
+                            marginBottom: 8,
                           }}
-                          rules={[
-                            {
-                              required: true,
-                              message: "",
-                            },
-                          ]}
+                          align="baseline"
                         >
-                          <DatePicker
-                            placeholder="Pilih tanggal pemesanan"
-                            size="large"
-                            format="DD/MM/YYYY"
-                            disabledDate={disableDate}
-                            style={{ width: "100%" }}
-                          />
-                        </Form.Item>
-                        {fields.length > 1 ? (
-                          <MinusCircleOutlined onClick={() => remove(name)} />
-                        ) : null}
-                      </Space>
-                    )
-                  )}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                    >
-                      Tambah tanggal
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
-
-            <p>Waktu Sport Class</p>
-
-            <Form.List name="time">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(
-                    ({ key, name, fieldKey, ...restField }, index) => (
-                      <Space
-                        key={key}
-                        style={{
-                          display: "flex",
-                          marginBottom: 8,
-                        }}
-                        align="baseline"
-                      >
-                        <Form.Item
-                          noStyle
-                          {...restField}
-                          name={[name]}
-                          fieldKey={[fieldKey]}
-                          style={{
-                            width: "100%",
-                          }}
-                          rules={[
-                            {
-                              required: true,
-                              message: "",
-                            },
-                          ]}
-                        >
-                          {type === "detail" ? (
-                            <p>{data?.time || "-"}</p>
-                          ) : (
-                            <Select
-                              style={{
-                                width: "100%",
-                              }}
+                          <Form.Item
+                            noStyle
+                            {...restField}
+                            name={[name]}
+                            fieldKey={[fieldKey]}
+                            style={{
+                              width: "100%",
+                            }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "",
+                              },
+                            ]}
+                          >
+                            <DatePicker
+                              placeholder="Pilih tanggal pemesanan"
                               size="large"
-                              placeholder="Pilih waktu mulai"
-                              options={[
-                                { value: "11:00", label: "11:00" },
-                                { value: "12:00", label: "12:00" },
-                                { value: "13:00", label: "13:00" },
-                                {
-                                  value: "14:00",
-                                  label: "14:00",
-                                  disabled: true,
-                                },
-                              ]}
+                              format="DD/MM/YYYY"
+                              disabledDate={disableDate}
+                              style={{ width: "100%" }}
                             />
-                          )}
-                        </Form.Item>
-                        {fields.length > 1 ? (
-                          <MinusCircleOutlined onClick={() => remove(name)} />
-                        ) : null}
-                      </Space>
-                    )
-                  )}
-                  <Form.Item>
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      block
-                      icon={<PlusOutlined />}
-                    >
-                      Tambah waktu
-                    </Button>
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
+                          </Form.Item>
+                          {fields.length > 1 ? (
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          ) : null}
+                        </Space>
+                      )
+                    )}
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        icon={<PlusOutlined />}
+                      >
+                        Tambah tanggal
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            )}
+
+            <p className="font-bold">Waktu Sport Class</p>
+
+            {type === "detail" ? (
+              <p className="mb-[24px]">{data?.time || "-"}</p>
+            ) : (
+              <Form.List name="time">
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(
+                      ({ key, name, fieldKey, ...restField }, index) => (
+                        <Space
+                          key={key}
+                          style={{
+                            display: "flex",
+                            marginBottom: 8,
+                          }}
+                          align="baseline"
+                        >
+                          <Form.Item
+                            noStyle
+                            {...restField}
+                            name={[name]}
+                            fieldKey={[fieldKey]}
+                            style={{
+                              width: "100%",
+                            }}
+                            rules={[
+                              {
+                                required: true,
+                                message: "",
+                              },
+                            ]}
+                          >
+                            {type === "detail" ? (
+                              <p>{data?.time || "-"}</p>
+                            ) : (
+                              <Select
+                                style={{
+                                  width: "100%",
+                                }}
+                                size="large"
+                                placeholder="Pilih waktu mulai"
+                                options={[
+                                  { value: "11:00", label: "11:00" },
+                                  { value: "12:00", label: "12:00" },
+                                  { value: "13:00", label: "13:00" },
+                                  {
+                                    value: "14:00",
+                                    label: "14:00",
+                                    disabled: true,
+                                  },
+                                ]}
+                              />
+                            )}
+                          </Form.Item>
+                          {fields.length > 1 ? (
+                            <MinusCircleOutlined onClick={() => remove(name)} />
+                          ) : null}
+                        </Space>
+                      )
+                    )}
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => add()}
+                        block
+                        icon={<PlusOutlined />}
+                      >
+                        Tambah waktu
+                      </Button>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            )}
 
             <Form.Item
               label="Kuota"

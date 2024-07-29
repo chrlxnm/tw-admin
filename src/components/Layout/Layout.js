@@ -26,13 +26,7 @@ const CustomLayout = () => {
   const path = location.pathname.split("/");
 
   const currentSection = () => {
-    if (path.length === 3) {
-      return path[2];
-    } else if (path.length === 2) {
       return path[1];
-    } else {
-      return "sport";
-    }
   };
   
   const goToPage = (page) => {
