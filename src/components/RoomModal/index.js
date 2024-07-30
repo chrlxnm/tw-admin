@@ -106,7 +106,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
               {type === "detail" ? (
                 <p>{data?.name || "-"}</p>
               ) : (
-                <Input placeholder="Tulis nama sport class" />
+                <Input placeholder="Tulis nama ruangan" />
               )}
             </Form.Item>
 
