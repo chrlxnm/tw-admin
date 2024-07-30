@@ -167,7 +167,7 @@ const SportClass = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin reject banner ini?",
+      content: "Apakah kamu yakin reject sport class ini?",
       onOk: () => onReject(id),
     });
   };
@@ -177,7 +177,7 @@ const SportClass = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin approve banner ini?",
+      content: "Apakah kamu yakin approve sport class ini?",
       onOk: () => onApprove(id),
     });
   };
@@ -187,7 +187,7 @@ const SportClass = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin delete banner ini?",
+      content: "Apakah kamu yakin delete sport class ini?",
       onOk: () => onDelete(id),
     });
   };

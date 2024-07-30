@@ -147,7 +147,7 @@ const Room = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin reject banner ini?",
+      content: "Apakah kamu yakin reject ruangan ini?",
       onOk: () => onReject(id),
     });
   };
@@ -157,7 +157,7 @@ const Room = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin approve banner ini?",
+      content: "Apakah kamu yakin approve ruangan ini?",
       onOk: () => onApprove(id),
     });
   };
@@ -167,7 +167,7 @@ const Room = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin delete banner ini?",
+      content: "Apakah kamu yakin delete ruangan ini?",
       onOk: () => onDelete(id),
     });
   };
