@@ -1,4 +1,4 @@
-import { Button, Input, Popover, Space, Table } from "antd";
+import { Button, Input, Popover, Space, Table, message } from "antd";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -13,6 +13,7 @@ import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
+import twService from "utils/services";
 import useGetRoomBookingList from "hooks/useGetRoomBookingList";
 import useGetRoomDetail from "hooks/useGetRoomDetail";
 
@@ -21,7 +22,13 @@ const ParticipantRoom = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: dataDetail, loading: detailLoading } = useGetRoomDetail(id);
-  const {data: bookingList, loading: bookingLoading } = useGetRoomBookingList(id);
+  const {
+    data: bookingList,
+    loading: bookingLoading,
+    fetchData: fetchDataList,
+  } = useGetRoomBookingList(id);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [loadingModal, setLoadingModal] = useState(false);
 
   const goToPage = (page) => {
     navigate(page, { replace: true });
@@ -46,47 +53,79 @@ const ParticipantRoom = () => {
     });
   };
 
-  const openReject = () => {
+  const onApprove = async (partId) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`rooms/${id}/participants/${partId}/approve`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Approve.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onReject = async (partId) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`schedules/${id}/participants/${partId}/reject`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Reject.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin reject banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan reject.`,
-        });
-      },
+      onOk: () => onReject(id),
     });
   };
 
-  const openApprove = () => {
+  const openApprove = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin approve banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan approve.`,
-        });
-      },
+      onOk: () => onApprove(id),
     });
   };
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (record, event) => {
     switch (event) {
       case "accept":
-        openApprove();
+        openApprove(record?.id);
         return;
       case "reject":
-        openReject();
+        openReject(record?.id);
         return;
       default:
         return;
@@ -98,14 +137,14 @@ const ParticipantRoom = () => {
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("accept")}
+          onClick={() => handleMenuClick(record, "accept")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Accept</span>
         </div>
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("reject")}
+          onClick={() => handleMenuClick(record, "reject")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Reject</span>
         </div>
@@ -224,7 +263,9 @@ const ParticipantRoom = () => {
 
       <HeaderWrapper>
         <Title>Peserta</Title>
-        <AddButton>{dataDetail?.joined || 0}/{dataDetail?.quota}</AddButton>
+        <AddButton>
+          {dataDetail?.joined || 0}/{dataDetail?.quota}
+        </AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -256,7 +297,12 @@ const ParticipantRoom = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={bookingList?.data} loading={bookingLoading} />
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        dataSource={bookingList?.data}
+        loading={bookingLoading}
+      />
     </Wrapper>
   );
 };
