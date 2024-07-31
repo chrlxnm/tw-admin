@@ -202,7 +202,7 @@ const RoomModal = ({
                 ))
               ) : (
                 <Upload {...propsImage} listType="picture-card">
-                  {imageList.length < 5 ? (
+                  {imageList.length < 1 ? (
                     <button
                       style={{
                         border: 0,
