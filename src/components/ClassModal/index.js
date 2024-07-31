@@ -310,7 +310,9 @@ const ClassModal = ({
               getValueFromEvent={normFile}
             >
               {type === "detail" ? (
-                <Image width={200} src="https://picsum.photos/200/300" />
+                data?.images?.map((item)=> 
+                  <Image width={200} src={item?.url} />
+                )
               ) : (
                 <Upload {...props} listType="picture-card">
                   <button

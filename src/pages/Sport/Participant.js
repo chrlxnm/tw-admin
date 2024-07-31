@@ -13,14 +13,16 @@ import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
+import useGetClassDetail from "hooks/useGetClassDetail";
 import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 
 const ParticipantSportClass = () => {
   const { id } = useParams();
   const {data: participantList, loading: participantLoading } = useGetClassParticipantList(id);
+  const {data: dataDetail, loading: detailLoading } = useGetClassDetail(id);
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
-
+console.log("hehehe", participantList)
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
@@ -130,7 +132,7 @@ const ParticipantSportClass = () => {
     },
     {
       title: "Unit/Div",
-      dataIndex: "unit",
+      dataIndex: "unit_division",
       key: "unit",
     },
     {
@@ -142,7 +144,7 @@ const ParticipantSportClass = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text) => <BadgePrimary color={text}>{text}</BadgePrimary>,
+      render: (text) => <BadgePrimary color={text?.toString()}>{text?.toString()}</BadgePrimary>,
     },
     {
       title: "Aksi",
@@ -189,18 +191,18 @@ const ParticipantSportClass = () => {
       </BackWrapper>
 
       <ContentWrapper>
-        <Image src={Poundfit} alt="photo" />
+        <Image src={dataDetail?.images?.[0]?.url} alt="photo" />
         <TitleWrapper>
-          <Date>Senin, 20 Mei 2024</Date>
-          <Title>Poundfit</Title>
+          <Date>{dataDetail?.date}</Date>
+          <Title>{dataDetail?.name}</Title>
           <BadgeWrapper>
             <GreyBadge>
               <Users />
-              Kuota 20 orang
+              Kuota {dataDetail?.quota || 0} orang
             </GreyBadge>
             <GreyBadge>
               <Clock />
-              16.00-17.00
+              {dataDetail?.time}
             </GreyBadge>
           </BadgeWrapper>
         </TitleWrapper>
@@ -208,7 +210,7 @@ const ParticipantSportClass = () => {
 
       <HeaderWrapper>
         <Title>Sport Class</Title>
-        <AddButton>10/20</AddButton>
+        <AddButton>{dataDetail?.joined || 0}/{dataDetail?.quota || 0}</AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -240,7 +242,7 @@ const ParticipantSportClass = () => {
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={participantList?.data} loading={participantLoading} />
+      <Table scroll={{ x: true }} columns={columns} dataSource={participantList} loading={participantLoading} />
     </Wrapper>
   );
 };
