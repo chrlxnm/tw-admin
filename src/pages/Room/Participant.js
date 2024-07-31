@@ -8,7 +8,6 @@ import Chip from "components/Chip/Chip";
 import { ReactComponent as Clock } from "assets/icons/clock.svg";
 import ConfirmationModal from "components/ConfirmationModal";
 import { DownOutlined } from "@ant-design/icons";
-import { Poundfit } from "assets/images/class";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
@@ -21,7 +20,7 @@ const ParticipantRoom = () => {
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
   const { id } = useParams();
-  const { data: dataDetail, loading: detailLoading } = useGetRoomDetail(id);
+  const { data: dataDetail } = useGetRoomDetail(id);
   const {
     data: bookingList,
     loading: bookingLoading,
@@ -222,6 +221,7 @@ const ParticipantRoom = () => {
 
   return (
     <Wrapper>
+      {contextHolder}
       <TWAlert
         visible={alert?.visible}
         message={alert?.message}
@@ -238,6 +238,7 @@ const ParticipantRoom = () => {
         content={confirmModal.content}
         onOk={confirmModal.onOk}
         onCancel={closeModalConfirm}
+        loading={loadingModal}
       />
       <BackWrapper onClick={() => goToPage("/room")}>
         <BackIcon />

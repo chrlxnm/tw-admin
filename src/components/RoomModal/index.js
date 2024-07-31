@@ -7,10 +7,18 @@ import { PlusOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import twService from "utils/services";
 
-const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) => {
+const RoomModal = ({
+  data,
+  visible,
+  onClose,
+  setAlert,
+  alert,
+  type,
+  refetch,
+}) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -23,7 +31,6 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
     };
   }, [visible]);
 
-  
   const onFinish = async (payload) => {
     setLoading(true);
     try {
@@ -34,7 +41,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
         visible: true,
         message: "Pendaftaran ruangan berhasil",
       });
-      refetch()
+      refetch();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -57,6 +64,8 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
   const closeModal = () => {
     onClose();
     form.resetFields();
+    setFileList([]);
+    setImageList([]);
   };
 
   const [fileList, setFileList] = useState([]);
@@ -72,11 +81,25 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
       return false;
     },
     fileList,
+  };console.log("CEKK", fileList)
+  const [imageList, setImageList] = useState([]);
+  const propsImage = {
+    onRemove: (file) => {
+      const index = imageList.indexOf(file);
+      const newFileList = imageList.slice();
+      newFileList.splice(index, 1);
+      setImageList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setImageList([...imageList, file]);
+      return false;
+    },
+    imageList,
   };
 
   return (
     <Modal
-      title={type === 'detail' ? "Detail Ruangan" : "Form Ruangan"}
+      title={type === "detail" ? "Detail Ruangan" : "Form Ruangan"}
       open={visible}
       onOk={closeModal}
       onCancel={closeModal}
@@ -135,33 +158,68 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
               )}
             </Form.Item>
             <Form.Item
+              label="Icon"
+              name="icon"
+              valuePropName="fileList"
+              getValueFromEvent={normFile}
+            >
+              {type === "detail" ? (
+                data?.icon?.map((item) => (
+                  <Image width={200} src={item?.url} />
+                ))
+              ) : (
+                <Upload {...props} listType="picture-card">
+                  {fileList?.length < 1 ? (
+                    <button
+                      style={{
+                        border: 0,
+                        background: "none",
+                      }}
+                      type="button"
+                    >
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </button>
+                  ) : null}
+                </Upload>
+              )}
+            </Form.Item>
+            <Form.Item
               label="Gambar"
               name="images"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
               {type === "detail" ? (
-                data?.images?.map((item)=> 
+                data?.images?.map((item) => (
                   <Image width={200} src={item?.url} />
-                )
+                ))
               ) : (
-                <Upload {...props} listType="picture-card">
-                  <button
-                    style={{
-                      border: 0,
-                      background: "none",
-                    }}
-                    type="button"
-                  >
-                    <PlusOutlined />
-                    <div
+                <Upload {...propsImage} listType="picture-card">
+                  {imageList.length < 5 ? (
+                    <button
                       style={{
-                        marginTop: 8,
+                        border: 0,
+                        background: "none",
                       }}
+                      type="button"
                     >
-                      Upload
-                    </div>
-                  </button>
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </button>
+                  ) : null}
                 </Upload>
               )}
             </Form.Item>
@@ -171,7 +229,11 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) =
                   Close
                 </ButtonPrimary>
               ) : (
-                <ButtonPrimary loading={loading} htmlType="submit" className="w-full h-[42px]">
+                <ButtonPrimary
+                  loading={loading}
+                  htmlType="submit"
+                  className="w-full h-[42px]"
+                >
                   Kirim
                 </ButtonPrimary>
               )}

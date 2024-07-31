@@ -18,7 +18,7 @@ import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 
 const ParticipantSportClass = () => {
   const { id } = useParams();
-  const { data: dataDetail, loading: detailLoading } = useGetClassDetail(id);
+  const { data: dataDetail } = useGetClassDetail(id);
   const {
     data: participantList,
     loading: participantLoading,
