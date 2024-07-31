@@ -1,4 +1,4 @@
-import { Button, Input, Popover, Space, Table } from "antd";
+import { Button, Input, Popover, Space, Table, message } from "antd";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -8,21 +8,27 @@ import Chip from "components/Chip/Chip";
 import { ReactComponent as Clock } from "assets/icons/clock.svg";
 import ConfirmationModal from "components/ConfirmationModal";
 import { DownOutlined } from "@ant-design/icons";
-import { Poundfit } from "assets/images/class";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
+import twService from "utils/services";
 import useGetClassDetail from "hooks/useGetClassDetail";
 import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 
 const ParticipantSportClass = () => {
   const { id } = useParams();
-  const {data: participantList, loading: participantLoading } = useGetClassParticipantList(id);
-  const {data: dataDetail, loading: detailLoading } = useGetClassDetail(id);
+  const { data: dataDetail, loading: detailLoading } = useGetClassDetail(id);
+  const {
+    data: participantList,
+    loading: participantLoading,
+    fetchData: fetchDataList,
+  } = useGetClassParticipantList(id);
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
-console.log("hehehe", participantList)
+  const [messageApi, contextHolder] = message.useMessage();
+  const [loadingModal, setLoadingModal] = useState(false);
+
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
@@ -39,37 +45,69 @@ console.log("hehehe", participantList)
     visible: false,
   });
 
-  const openReject = () => {
+  const onApprove = async (partId) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`schedules/${id}/participants/${partId}/approve`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Approve.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onReject = async (partId) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`schedules/${id}/participants/${partId}/reject`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Reject.",
+      });
+      fetchDataList();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin reject banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan reject.`
-        })
-      },
+      onOk: () => onReject(id),
     });
   };
 
-  const openApprove = () => {
+  const openApprove = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin approve banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan approve.`
-        })
-      },
+      onOk: () => onApprove(id),
     });
   };
 
@@ -80,13 +118,13 @@ console.log("hehehe", participantList)
     });
   };
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (record, event) => {
     switch (event) {
       case "accept":
-        openApprove();
+        openApprove(record?.id);
         return;
       case "reject":
-        openReject();
+        openReject(record?.id);
         return;
       default:
         return;
@@ -98,14 +136,14 @@ console.log("hehehe", participantList)
       <div style={{ display: "flex", flexDirection: "column" }}>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("accept")}
+          onClick={() => handleMenuClick(record, "accept")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Accept</span>
         </div>
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("reject")}
+          onClick={() => handleMenuClick(record, "reject")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Reject</span>
         </div>
@@ -144,7 +182,9 @@ console.log("hehehe", participantList)
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (text) => <BadgePrimary color={text?.toString()}>{text?.toString()}</BadgePrimary>,
+      render: (text) => (
+        <BadgePrimary color={text?.toString()}>{text?.toString()}</BadgePrimary>
+      ),
     },
     {
       title: "Aksi",
@@ -168,22 +208,24 @@ console.log("hehehe", participantList)
 
   return (
     <Wrapper>
-    <TWAlert
-      visible={alert?.visible}
-      message={alert?.message}
-      onClose={() =>
-        setAlert({
-          ...alert,
-          visible: false,
-        })
-      }
-    />
+      {contextHolder}
+      <TWAlert
+        visible={alert?.visible}
+        message={alert?.message}
+        onClose={() =>
+          setAlert({
+            ...alert,
+            visible: false,
+          })
+        }
+      />
       <ConfirmationModal
         visible={confirmModal.visible}
         title={confirmModal.title}
         content={confirmModal.content}
         onOk={confirmModal.onOk}
         onCancel={closeModalConfirm}
+        loading={loadingModal}
       />
       <BackWrapper onClick={() => goToPage("/sport")}>
         <BackIcon />
@@ -210,7 +252,9 @@ console.log("hehehe", participantList)
 
       <HeaderWrapper>
         <Title>Sport Class</Title>
-        <AddButton>{dataDetail?.joined || 0}/{dataDetail?.quota || 0}</AddButton>
+        <AddButton>
+          {dataDetail?.joined || 0}/{dataDetail?.quota || 0}
+        </AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input
@@ -242,7 +286,12 @@ console.log("hehehe", participantList)
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={participantList} loading={participantLoading} />
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        dataSource={participantList}
+        loading={participantLoading}
+      />
     </Wrapper>
   );
 };

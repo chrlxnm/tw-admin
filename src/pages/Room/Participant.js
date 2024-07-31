@@ -14,11 +14,13 @@ import TWAlert from "components/Alert";
 import { ReactComponent as Users } from "assets/icons/users.svg";
 import styled from "styled-components";
 import useGetRoomBookingList from "hooks/useGetRoomBookingList";
+import useGetRoomDetail from "hooks/useGetRoomDetail";
 
 const ParticipantRoom = () => {
   const [status, setStatus] = useState("all");
   const navigate = useNavigate();
   const { id } = useParams();
+  const { data: dataDetail, loading: detailLoading } = useGetRoomDetail(id);
   const {data: bookingList, loading: bookingLoading } = useGetRoomBookingList(id);
 
   const goToPage = (page) => {
@@ -204,17 +206,17 @@ const ParticipantRoom = () => {
       </BackWrapper>
 
       <ContentWrapper>
-        <Image src={Poundfit} alt="photo" />
+        <Image src={dataDetail?.images?.[0]?.url} alt="photo" />
         <TitleWrapper>
-          <Title>Studio Band</Title>
+          <Title>{dataDetail?.name}</Title>
           <BadgeWrapper>
             <GreyBadge>
               <Users />
-              Kuota 20 orang
+              Kuota {dataDetail?.quota || 0} orang
             </GreyBadge>
             <GreyBadge>
               <Clock />
-              16.00-17.00
+              {dataDetail?.time}
             </GreyBadge>
           </BadgeWrapper>
         </TitleWrapper>
@@ -222,7 +224,7 @@ const ParticipantRoom = () => {
 
       <HeaderWrapper>
         <Title>Peserta</Title>
-        <AddButton>10/20</AddButton>
+        <AddButton>{dataDetail?.joined || 0}/{dataDetail?.quota}</AddButton>
       </HeaderWrapper>
       <SearchWrapper>
         <Input

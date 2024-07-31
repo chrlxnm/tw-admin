@@ -7,7 +7,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import twService from "utils/services";
 
-const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
+const RoomModal = ({ data, visible, onClose, setAlert, alert, type, refetch }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false)
@@ -34,6 +34,7 @@ const RoomModal = ({ data, visible, onClose, setAlert, alert, type }) => {
         visible: true,
         message: "Pendaftaran ruangan berhasil",
       });
+      refetch()
     } catch (error) {
       messageApi.open({
         type: "error",

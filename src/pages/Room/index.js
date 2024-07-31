@@ -394,6 +394,7 @@ const Room = () => {
         visible={modalProps?.visible}
         data={modalProps?.data}
         onClose={() => setModalProps({ ...modalProps, visible: false })}
+        refetch={fetchDataList}
       />
       <HeaderWrapper>
         <Title>Ruangan</Title>
