@@ -21,17 +21,35 @@ const ParticipantRoom = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: dataDetail } = useGetRoomDetail(id);
+  const [params, setParams] = useState({
+    name: '',
+    status: 'all'
+  });
   const {
     data: bookingList,
     loading: bookingLoading,
     fetchData: fetchDataList,
-  } = useGetRoomBookingList(id);
+  } = useGetRoomBookingList(id, params);
   const [messageApi, contextHolder] = message.useMessage();
   const [loadingModal, setLoadingModal] = useState(false);
 
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
+
+  const onSearch = (e) => {
+    setParams({
+      ...params,
+      name: e.target.value
+    })
+  }
+
+  const changeStatus = (e) => {
+    setParams({
+      ...params,
+      status: e
+    })
+  }
 
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
@@ -274,27 +292,28 @@ const ParticipantRoom = () => {
           size="large"
           placeholder="Cari peserta disini . . ."
           prefix={<SearchIcon />}
+          onChange={onSearch}
         />
         <ChipWrapper>
           <Chip
             label={"Semua"}
-            active={status === "all"}
-            onClick={() => setStatus("all")}
+            active={params?.status === "all"}
+            onClick={() => changeStatus("all")}
           />
           <Chip
             label={"Submitted"}
-            active={status === "submitted"}
-            onClick={() => setStatus("submitted")}
+            active={params?.status === "submitted"}
+            onClick={() => changeStatus("submitted")}
           />
           <Chip
             label={"Approved"}
-            active={status === "approved"}
-            onClick={() => setStatus("approved")}
+            active={params?.status === "approved"}
+            onClick={() => changeStatus("approved")}
           />
           <Chip
             label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            active={params?.status === "cancelled"}
+            onClick={() => changeStatus("cancelled")}
           />
         </ChipWrapper>
       </SearchWrapper>

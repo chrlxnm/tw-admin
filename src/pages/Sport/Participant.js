@@ -19,12 +19,16 @@ import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 const ParticipantSportClass = () => {
   const { id } = useParams();
   const { data: dataDetail } = useGetClassDetail(id);
+  const [params, setParams] = useState({
+    name: '',
+    status: 'all'
+  });
   const {
     data: participantList,
     loading: participantLoading,
     fetchData: fetchDataList,
-  } = useGetClassParticipantList(id);
-  const [status, setStatus] = useState("all");
+  } = useGetClassParticipantList(id, params);
+  
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [loadingModal, setLoadingModal] = useState(false);
@@ -32,6 +36,20 @@ const ParticipantSportClass = () => {
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
+
+  const onSearch = (e) => {
+    setParams({
+      ...params,
+      name: e.target.value
+    })
+  }
+
+  const changeStatus = (e) => {
+    setParams({
+      ...params,
+      status: e
+    })
+  }
 
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
@@ -262,27 +280,28 @@ const ParticipantSportClass = () => {
           size="large"
           placeholder="Cari sport class disini . . ."
           prefix={<SearchIcon />}
+          onChange={onSearch}
         />
         <ChipWrapper>
           <Chip
             label={"Semua"}
-            active={status === "all"}
-            onClick={() => setStatus("all")}
+            active={params?.status === "all"}
+            onClick={() => changeStatus("all")}
           />
           <Chip
             label={"Submitted"}
-            active={status === "submitted"}
-            onClick={() => setStatus("submitted")}
+            active={params?.status === "submitted"}
+            onClick={() => changeStatus("submitted")}
           />
           <Chip
             label={"Approved"}
-            active={status === "approved"}
-            onClick={() => setStatus("approved")}
+            active={params?.status === "approved"}
+            onClick={() => changeStatus("approved")}
           />
           <Chip
             label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            active={params?.status === "cancelled"}
+            onClick={() => changeStatus("cancelled")}
           />
         </ChipWrapper>
       </SearchWrapper>
