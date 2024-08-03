@@ -233,18 +233,18 @@ const ParticipantSportClass = () => {
       </BackWrapper>
 
       <ContentWrapper>
-        <Image src={dataDetail?.images?.[0]?.url} alt="photo" />
+        <Image src={dataDetail?.data?.images?.[0]?.url} alt="photo" />
         <TitleWrapper>
-          <Date>{dataDetail?.date}</Date>
-          <Title>{dataDetail?.name}</Title>
+          <Date>{dataDetail?.data?.date}</Date>
+          <Title>{dataDetail?.data?.name}</Title>
           <BadgeWrapper>
             <GreyBadge>
               <Users />
-              Kuota {dataDetail?.quota || 0} orang
+              Kuota {dataDetail?.data?.quota || 0} orang
             </GreyBadge>
             <GreyBadge>
               <Clock />
-              {dataDetail?.time}
+              {dataDetail?.data?.time || '-'}
             </GreyBadge>
           </BadgeWrapper>
         </TitleWrapper>
@@ -253,7 +253,7 @@ const ParticipantSportClass = () => {
       <HeaderWrapper>
         <Title>Sport Class</Title>
         <AddButton>
-          {dataDetail?.joined || 0}/{dataDetail?.quota || 0}
+          {dataDetail?.data?.joined || 0}/{dataDetail?.data?.quota || 0}
         </AddButton>
       </HeaderWrapper>
       <SearchWrapper>

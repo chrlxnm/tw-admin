@@ -256,7 +256,7 @@ const ParticipantRoom = () => {
             </GreyBadge>
             <GreyBadge>
               <Clock />
-              {dataDetail?.time}
+              {dataDetail?.data?.time || '-'}
             </GreyBadge>
           </BadgeWrapper>
         </TitleWrapper>
@@ -265,7 +265,7 @@ const ParticipantRoom = () => {
       <HeaderWrapper>
         <Title>Peserta</Title>
         <AddButton>
-          {dataDetail?.joined || 0}/{dataDetail?.data?.quota || 0}
+          {dataDetail?.data?.joined || 0}/{dataDetail?.data?.quota || 0}
         </AddButton>
       </HeaderWrapper>
       <SearchWrapper>
