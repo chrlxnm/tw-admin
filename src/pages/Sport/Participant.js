@@ -278,7 +278,7 @@ const ParticipantSportClass = () => {
         <Input
           className="my-[16px] w-[40%]"
           size="large"
-          placeholder="Cari sport class disini . . ."
+          placeholder="Cari peserta disini . . ."
           prefix={<SearchIcon />}
           onChange={onSearch}
         />
