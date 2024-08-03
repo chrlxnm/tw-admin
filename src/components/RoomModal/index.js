@@ -32,9 +32,13 @@ const RoomModal = ({
   }, [visible]);
 
   const onFinish = async (payload) => {
+    let body = {
+      ...payload,
+      icon: payload?.icon?.[0]
+    }
     setLoading(true);
     try {
-      await twService.post(`rooms`, payload); // Replace with your API endpoint
+      await twService.post(`rooms`, body); // Replace with your API endpoint
       closeModal();
       setAlert({
         ...alert,
@@ -81,7 +85,8 @@ const RoomModal = ({
       return false;
     },
     fileList,
-  };console.log("CEKK", fileList)
+  };
+  
   const [imageList, setImageList] = useState([]);
   const propsImage = {
     onRemove: (file) => {
@@ -164,9 +169,7 @@ const RoomModal = ({
               getValueFromEvent={normFile}
             >
               {type === "detail" ? (
-                data?.icon?.map((item) => (
-                  <Image width={200} src={item?.url} />
-                ))
+                data?.icon?.map((item) => <Image width={200} src={item?.url} />)
               ) : (
                 <Upload {...props} listType="picture-card">
                   {fileList?.length < 1 ? (

@@ -32,7 +32,7 @@ const Room = () => {
 
   const [params, setParams] = useState({
     name: undefined,
-    status: undefined,
+    status: "all",
     page: 1,
   });
 
@@ -120,7 +120,7 @@ const Room = () => {
   const fetchChangeStatus = async (id, type) => {
     setLoadingModal(true);
     try {
-      await twService.put(`schedules/${id}/${type}`); // Replace with your API endpoint
+      await twService.put(`rooms/${id}/${type}`); // Replace with your API endpoint
       closeModalConfirm();
       setAlert({
         ...alert,
@@ -413,23 +413,23 @@ const Room = () => {
         <ChipWrapper>
           <Chip
             label={"Semua"}
-            active={status === "all"}
-            onClick={() => setStatus("all")}
+            active={params.status === "all"}
+            onClick={() => setParams({...params, status: 'all'})}
           />
           <Chip
             label={"Submitted"}
-            active={status === "submitted"}
-            onClick={() => setStatus("submitted")}
+            active={params.status === "submitted"}
+            onClick={() => setParams({...params, status: 'submitted'})}
           />
           <Chip
             label={"Approved"}
-            active={status === "approved"}
-            onClick={() => setStatus("approved")}
+            active={params.status === "approved"}
+            onClick={() => setParams({...params, status: 'approved'})}
           />
           <Chip
             label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            active={params.status === "cancelled"}
+            onClick={() => setParams({...params, status: 'cancelled'})}
           />
         </ChipWrapper>
       </SearchWrapper>

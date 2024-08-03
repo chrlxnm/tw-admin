@@ -21,7 +21,7 @@ const SportClass = () => {
   const [status, setStatus] = useState("all");
   const [loadingModal, setLoadingModal] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [params, setParams] = useState({ name: "", page: 1 });
+  const [params, setParams] = useState({ name: "", page: 1, status: "all" });
   const { data, loading, fetchData } = useGetClassList(params);
   // eslint-disable-next-line no-unused-vars
   const [modalProps, setModalProps] = useState({
@@ -197,7 +197,9 @@ const SportClass = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: `Apakah kamu yakin ${type?.toLowerCase() === "active" ? "deactivate" : "activate"} kelas ini?`,
+      content: `Apakah kamu yakin ${
+        type?.toLowerCase() === "active" ? "deactivate" : "activate"
+      } kelas ini?`,
       onOk: () =>
         fetchChangeStatus(
           id,
@@ -421,23 +423,23 @@ const SportClass = () => {
         <ChipWrapper>
           <Chip
             label={"Semua"}
-            active={status === "all"}
-            onClick={() => setStatus("all")}
+            active={params.status === "all"}
+            onClick={() => setParams({ ...params, status: "all" })}
           />
           <Chip
             label={"Submitted"}
-            active={status === "submitted"}
-            onClick={() => setStatus("submitted")}
+            active={params.status === "submitted"}
+            onClick={() => setParams({ ...params, status: "submitted" })}
           />
           <Chip
             label={"Approved"}
-            active={status === "approved"}
-            onClick={() => setStatus("approved")}
+            active={params.status === "approved"}
+            onClick={() => setParams({ ...params, status: "approved" })}
           />
           <Chip
             label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            active={params.status === "cancelled"}
+            onClick={() => setParams({ ...params, status: "cancelled" })}
           />
         </ChipWrapper>
       </SearchWrapper>
