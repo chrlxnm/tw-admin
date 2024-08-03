@@ -7,7 +7,7 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
-.ant-typography, .ant-input {
+.ant-typography, .ant-input, .ant-picker {
   font-family: 'Montserrat', sans-serif !important;
 }
 
