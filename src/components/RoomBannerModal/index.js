@@ -125,7 +125,7 @@ const HeroBannerModal = ({
               getValueFromEvent={normFile}
             >
               {type === "detail" ? (
-                <Image width={200} src="https://picsum.photos/200/300" />
+                <Image width={200} src={data?.images?.[0]?.url} />
               ) : (
                 <Upload {...props} listType="picture-card">
                 {fileList?.length < 1 ? (

@@ -59,37 +59,70 @@ const RoomBanner = () => {
     });
   };
 
-  const openReject = () => {
+
+  const onApprove = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`banners/room/${id}/approve`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Approve.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const onReject = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.post(`banners/room/${id}/reject`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan Reject.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+  
+  const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin reject banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan reject.",
-        });
-      },
+      onOk: () => onReject(id),
     });
   };
 
-  const openApprove = () => {
+  const openApprove = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
       content: "Apakah kamu yakin approve banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan Approve.",
-        });
-      },
+      onOk: () => onApprove(id),
     });
   };
 
@@ -257,13 +290,13 @@ const RoomBanner = () => {
         localStorage.getItem("role")?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
-              <ButtonReject onClick={openReject}>
+              <ButtonReject onClick={() => openReject(record?.id)}>
                 <Space>
                   <CrossIcon />
                   Reject
                 </Space>
               </ButtonReject>
-              <ButtonApprove onClick={openApprove}>
+              <ButtonApprove onClick={() => openApprove(record.id)}>
                 <Space>
                   <CheckIcon />
                   Approve
