@@ -17,6 +17,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import moment from "moment";
 import styled from "styled-components";
 import twService from "utils/services";
+import useGetClassTimeList from "hooks/useGetClassTime";
 
 const ClassModal = ({
   data,
@@ -30,6 +31,7 @@ const ClassModal = ({
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
+  const {data: timeList} = useGetClassTimeList();
 
   const disableDate = (current) => {
     // Disable dates before today
@@ -246,16 +248,7 @@ const ClassModal = ({
                                 }}
                                 size="large"
                                 placeholder="Pilih waktu mulai"
-                                options={[
-                                  { value: "11:00", label: "11:00" },
-                                  { value: "12:00", label: "12:00" },
-                                  { value: "13:00", label: "13:00" },
-                                  {
-                                    value: "14:00",
-                                    label: "14:00",
-                                    disabled: true,
-                                  },
-                                ]}
+                                options={timeList}
                               />
                             )}
                           </Form.Item>
