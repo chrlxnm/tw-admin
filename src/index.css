@@ -7,6 +7,10 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
+.ant-typography, .ant-input {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
 .ant-form-item-label {
   font-weight: 700;
 }

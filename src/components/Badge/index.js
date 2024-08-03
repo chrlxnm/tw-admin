@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const getBgColor = ({ color }) => {
-  switch (color?.toLowerCase()) {
+  switch (color?.toString()?.toLowerCase()) {
     case "approved":
       return "#E6F7EF";
     case "canceled":
@@ -18,7 +18,7 @@ const getBgColor = ({ color }) => {
 };
 
 const getColor = ({ color }) => {
-  switch (color?.toLowerCase()) {
+  switch (color?.toString()?.toLowerCase()) {
     case "approved":
       return "#00AA5B";
     case "active":
