@@ -189,16 +189,16 @@ const ClassModal = ({
                         </Space>
                       )
                     )}
-                    <Form.Item>
-                      <Button
-                        type="dashed"
+                    <div className="flex justify-end">
+                      <ButtonPrimary
+                        className="!w-fit"
                         onClick={() => add()}
                         block
                         icon={<PlusOutlined />}
                       >
-                        Tambah tanggal
-                      </Button>
-                    </Form.Item>
+                        Tambah
+                      </ButtonPrimary>
+                    </div>
                   </>
                 )}
               </Form.List>
@@ -265,16 +265,16 @@ const ClassModal = ({
                         </Space>
                       )
                     )}
-                    <Form.Item>
-                      <Button
-                        type="dashed"
+                    <div className="flex justify-end">
+                      <ButtonPrimary
+                        className="!w-fit"
                         onClick={() => add()}
                         block
                         icon={<PlusOutlined />}
                       >
-                        Tambah waktu
-                      </Button>
-                    </Form.Item>
+                        Tambah
+                      </ButtonPrimary>
+                    </div>
                   </>
                 )}
               </Form.List>
