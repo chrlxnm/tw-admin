@@ -246,13 +246,13 @@ const ParticipantRoom = () => {
       </BackWrapper>
 
       <ContentWrapper>
-        <Image src={dataDetail?.images?.[0]?.url} alt="photo" />
+        <Image src={dataDetail?.data?.images?.[0]?.url} alt="photo" />
         <TitleWrapper>
-          <Title>{dataDetail?.name}</Title>
+          <Title>{dataDetail?.data?.name}</Title>
           <BadgeWrapper>
             <GreyBadge>
               <Users />
-              Kuota {dataDetail?.quota || 0} orang
+              Kuota {dataDetail?.data?.quota || 0} orang
             </GreyBadge>
             <GreyBadge>
               <Clock />
@@ -265,7 +265,7 @@ const ParticipantRoom = () => {
       <HeaderWrapper>
         <Title>Peserta</Title>
         <AddButton>
-          {dataDetail?.joined || 0}/{dataDetail?.quota}
+          {dataDetail?.joined || 0}/{dataDetail?.data?.quota || 0}
         </AddButton>
       </HeaderWrapper>
       <SearchWrapper>
