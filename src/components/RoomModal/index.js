@@ -34,7 +34,7 @@ const RoomModal = ({
   const onFinish = async (payload) => {
     let body = {
       ...payload,
-      icon: payload?.icon?.[0]
+      icon: payload?.icon
     }
     setLoading(true);
     try {
