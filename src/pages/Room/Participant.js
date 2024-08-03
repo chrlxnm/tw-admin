@@ -272,10 +272,6 @@ const ParticipantRoom = () => {
               <Users />
               Kuota {dataDetail?.data?.quota || 0} orang
             </GreyBadge>
-            <GreyBadge>
-              <Clock />
-              {dataDetail?.data?.time || '-'}
-            </GreyBadge>
           </BadgeWrapper>
         </TitleWrapper>
       </ContentWrapper>
