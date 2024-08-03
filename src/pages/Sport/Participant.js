@@ -253,7 +253,7 @@ const ParticipantSportClass = () => {
       <HeaderWrapper>
         <Title>Sport Class</Title>
         <AddButton>
-          {dataDetail?.data?.joined || 0}/{dataDetail?.data?.quota || 0}
+          {dataDetail?.data?.participants || 0}/{dataDetail?.data?.quota || 0}
         </AddButton>
       </HeaderWrapper>
       <SearchWrapper>

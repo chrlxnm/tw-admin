@@ -265,7 +265,7 @@ const ParticipantRoom = () => {
       <HeaderWrapper>
         <Title>Peserta</Title>
         <AddButton>
-          {dataDetail?.data?.joined || 0}/{dataDetail?.data?.quota || 0}
+          {dataDetail?.data?.bookings || 0}/{dataDetail?.data?.quota || 0}
         </AddButton>
       </HeaderWrapper>
       <SearchWrapper>
