@@ -1,13 +1,24 @@
-import { Form, Image, Modal as ModalAntd, Upload } from "antd";
+import { Form, Image, Modal as ModalAntd, Upload, message } from "antd";
 import React, { useEffect, useState } from "react";
 
 import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
 import { PlusOutlined } from "@ant-design/icons";
 import styled from "styled-components";
+import twService from "utils/services";
 
-const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
+const HeroBannerModal = ({
+  data,
+  visible,
+  onClose,
+  setAlert,
+  alert,
+  type,
+  refetch,
+}) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (visible) {
@@ -20,13 +31,27 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
     };
   }, [visible]);
 
-  const onFinish = (e) => {
-    closeModal();
-    setAlert({
-      ...alert,
-      visible: true,
-      message: "Pembuatan hero banner berhasil",
-    });
+  const onFinish = async (payload) => {
+    setLoading(true);
+    try {
+      await twService.post(`banners/room`, payload); // Replace with your API endpoint
+      closeModal();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Pembuatan room banner berhasil",
+      });
+      refetch();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const normFile = (e) => {
@@ -39,6 +64,7 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
   const closeModal = () => {
     onClose();
     form.resetFields();
+    setFileList([]);
   };
 
   const [fileList, setFileList] = useState([]);
@@ -58,13 +84,14 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
 
   return (
     <Modal
-      title={type === 'detail' ? "Detail Room Banner" : "Form Room Banner"}
+      title={type === "detail" ? "Detail Room Banner" : "Form Room Banner"}
       open={visible}
       onOk={closeModal}
       onCancel={closeModal}
       centered
       maskClosable={false}
     >
+      {contextHolder}
       <Wrapper>
         <RightSide>
           <Form
@@ -93,7 +120,7 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
             </Form.Item>
             <Form.Item
               label="Upload"
-              name="upload"
+              name="images"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
@@ -101,6 +128,7 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
                 <Image width={200} src="https://picsum.photos/200/300" />
               ) : (
                 <Upload {...props} listType="picture-card">
+                {fileList?.length < 1 ? (
                   <button
                     style={{
                       border: 0,
@@ -117,6 +145,7 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
                       Upload
                     </div>
                   </button>
+                ) : null}
                 </Upload>
               )}
             </Form.Item>
@@ -126,7 +155,11 @@ const HeroBannerModal = ({ data, visible, onClose, setAlert, alert, type }) => {
                   Close
                 </ButtonPrimary>
               ) : (
-                <ButtonPrimary htmlType="submit" className="w-full h-[42px]">
+                <ButtonPrimary
+                  htmlType="submit"
+                  className="w-full h-[42px]"
+                  loading={loading}
+                >
                   Kirim
                 </ButtonPrimary>
               )}

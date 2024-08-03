@@ -18,9 +18,8 @@ import useGetClassList from "hooks/useGetClassList";
 import { useNavigate } from "react-router-dom";
 
 const SportClass = () => {
-  const [status, setStatus] = useState("all");
-  const [loadingModal, setLoadingModal] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
+  const [loadingModal, setLoadingModal] = useState(false);
   const [params, setParams] = useState({ name: "", page: 1, status: "all" });
   const { data, loading, fetchData } = useGetClassList(params);
   // eslint-disable-next-line no-unused-vars

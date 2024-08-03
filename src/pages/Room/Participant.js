@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ReactComponent as BackIcon } from "assets/icons/back-icons.svg";
 import { BadgePrimary } from "components/Badge";
 import Chip from "components/Chip/Chip";
-import { ReactComponent as Clock } from "assets/icons/clock.svg";
 import ConfirmationModal from "components/ConfirmationModal";
 import { DownOutlined } from "@ant-design/icons";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
@@ -17,7 +16,6 @@ import useGetRoomBookingList from "hooks/useGetRoomBookingList";
 import useGetRoomDetail from "hooks/useGetRoomDetail";
 
 const ParticipantRoom = () => {
-  const [status, setStatus] = useState("all");
   const navigate = useNavigate();
   const { id } = useParams();
   const { data: dataDetail } = useGetRoomDetail(id);

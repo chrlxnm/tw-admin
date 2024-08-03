@@ -1,5 +1,5 @@
 import { BadgePrimary, BadgeSecondary } from "components/Badge";
-import { Button, Popover, Space, Table } from "antd";
+import { Button, Popover, Space, Table, message } from "antd";
 import React, { Fragment, useState } from "react";
 
 import { ReactComponent as CheckIcon } from "assets/icons/check-icon.svg";
@@ -12,16 +12,18 @@ import { Input } from "components/Input";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
-import { useAuth } from "contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import twService from "utils/services";
+import useGetHeroBannerList from "hooks/useGetHeroList";
 
 const Hero = () => {
-  const [status, setStatus] = useState("all");
+  const [messageApi, contextHolder] = message.useMessage();
   // eslint-disable-next-line no-unused-vars
-  const {user} = useAuth();
+  const [loadingModal, setLoadingModal] = useState(false);
+  const [params, setParams] = useState({ name: "", page: 1, status: "all" });
+  const { data, loading, fetchData } = useGetHeroBannerList(params);
   const [modalProps, setModalProps] = useState({
     visible: false,
-    type: 'add',
+    type: "add",
     data: undefined,
   });
 
@@ -39,7 +41,7 @@ const Hero = () => {
       ...modalProps,
       visible: true,
       data: data,
-      type: 'add'
+      type: "add",
     });
   };
 
@@ -84,37 +86,10 @@ const Hero = () => {
     });
   };
 
-  const openDelete = () => {
-    setConfirmModal({
-      ...confirmModal,
-      visible: true,
-      title: "Konfirmasi",
-      content: "Apakah kamu yakin delete banner ini?",
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: "Berhasil melakukan delete.",
-        });
-      },
-    });
-  };
-
-  const onChangeStatus = (type) => {
-    setConfirmModal({
-      ...confirmModal,
-      visible: true,
-      title: "Konfirmasi",
-      content: `Apakah kamu yakin ${type} banner ini?`,
-      onOk: () => {
-        closeModalConfirm();
-        setAlert({
-          ...alert,
-          visible: true,
-          message: `Berhasil melakukan ${type}.`,
-        });
-      },
+  const handleTableChange = (event) => {
+    setParams({
+      ...params,
+      page: event?.current,
     });
   };
 
@@ -129,28 +104,93 @@ const Hero = () => {
     message: "",
     visible: false,
   });
-
-  const navigate = useNavigate();
-
-  const goToPage = (page) => {
-    navigate(page, { replace: true });
-  };
-
-  const handleMenuClick = (event, type = "") => {
+  
+  const handleMenuClick = (record, event, type = "") => {
     switch (event) {
-      case "detail":
-        goToPage("detail/1");
-        return;
       case "status":
-        onChangeStatus(type);
+        openChangeStatus(record?.id, type);
         return;
       case "delete":
-        openDelete();
+        openDelete(record?.id);
         return;
       default:
         return;
     }
   };
+  
+  const openDelete = (id) => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: "Apakah kamu yakin delete ruangan ini?",
+      onOk: () => onDelete(id),
+    });
+  };
+  
+  const onDelete = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.delete(`banners/hero/${id}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan delete, menunggu approval checker.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const openChangeStatus = (id, type) => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: true,
+      title: "Konfirmasi",
+      content: `Apakah kamu yakin ${
+        type?.toLowerCase() === "active" ? "deactivate" : "activate"
+      } ruangan ini?`,
+      onOk: () =>
+        fetchChangeStatus(
+          id,
+          type?.toLowerCase() === "active" ? "deactivate" : "activate"
+        ),
+    });
+  };
+  const fetchChangeStatus = async (id, type) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`banners/hero/${id}/${type}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: `Berhasil melakukan ${
+          type?.toLowerCase() === "activate" ? "aktivasi" : "deaktivasi"
+        }.`,
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
   const contentAction = (record, index) => {
     return (
       <div
@@ -165,7 +205,7 @@ const Hero = () => {
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("status", record?.condition)}
+          onClick={() => handleMenuClick(record, "status", record?.condition)}
         >
           <span style={{ marginLeft: "0.5rem" }}>
             {record?.condition?.toLowerCase() !== "inactive"
@@ -176,7 +216,7 @@ const Hero = () => {
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick("delete")}
+          onClick={() => handleMenuClick(record, "delete")}
         >
           <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
         </div>
@@ -214,7 +254,7 @@ const Hero = () => {
       title: "Aksi",
       key: "action",
       render: (_, record, index) =>
-        localStorage.getItem("role")?.includes('checker') ? (
+        localStorage.getItem("role")?.includes("checker") ? (
           record?.status?.toLowerCase() === "submitted" ? (
             <Space>
               <ButtonReject onClick={openReject}>
@@ -266,31 +306,9 @@ const Hero = () => {
     }));
   };
 
-  const data = [
-    {
-      id: "1",
-      name: "Ruangan Band",
-      image: 32,
-      condition: "Active",
-      status: "Submitted",
-    },
-    {
-      id: "2",
-      name: "Ruang Karaoke",
-      image: 10,
-      condition: "Inactive",
-      status: "Approved",
-    },
-    {
-      id: "3",
-      name: "Area Panggung",
-      image: 25,
-      condition: "Active",
-      status: "Canceled",
-    },
-  ];
   return (
     <Fragment>
+      {contextHolder}
       <TWAlert
         visible={alert?.visible}
         message={alert?.message}
@@ -307,6 +325,7 @@ const Hero = () => {
         content={confirmModal.content}
         onOk={confirmModal.onOk}
         onCancel={closeModalConfirm}
+        loading={loadingModal}
       />
       <HeroBannerModal
         alert={alert}
@@ -315,6 +334,7 @@ const Hero = () => {
         visible={modalProps?.visible}
         data={modalProps?.data}
         onClose={() => setModalProps({ ...modalProps, visible: false })}
+        refetch={fetchData}
       />
       <HeaderWrapper>
         <Title>Hero Banner</Title>
@@ -326,33 +346,44 @@ const Hero = () => {
         <Input
           className="my-[16px] w-[40%]"
           size="large"
+          onChange={(e) => setParams({ ...params, name: e.target.value })}
           placeholder="Cari Hero Banner disini . . ."
           prefix={<SearchIcon />}
         />
         <ChipWrapper>
           <Chip
             label={"Semua"}
-            active={status === "all"}
-            onClick={() => setStatus("all")}
+            active={params.status === "all"}
+            onClick={() => setParams({...params, status: 'all'})}
           />
           <Chip
             label={"Submitted"}
-            active={status === "submitted"}
-            onClick={() => setStatus("submitted")}
+            active={params.status === "submitted"}
+            onClick={() => setParams({...params, status: 'submitted'})}
           />
           <Chip
             label={"Approved"}
-            active={status === "approved"}
-            onClick={() => setStatus("approved")}
+            active={params.status === "approved"}
+            onClick={() => setParams({...params, status: 'approved'})}
           />
           <Chip
             label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            active={params.status === "cancelled"}
+            onClick={() => setParams({...params, status: 'cancelled'})}
           />
         </ChipWrapper>
       </SearchWrapper>
-      <Table scroll={{ x: true }} columns={columns} dataSource={data} />
+      <Table
+        scroll={{ x: true }}
+        columns={columns}
+        loading={loading}
+        dataSource={data?.data}
+        pagination={{
+          total: data?.meta?.total,
+          current: params?.page,
+        }}
+        onChange={handleTableChange}
+      />
     </Fragment>
   );
 };
