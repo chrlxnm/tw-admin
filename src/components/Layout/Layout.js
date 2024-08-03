@@ -26,9 +26,12 @@ const CustomLayout = () => {
   const path = location.pathname.split("/");
 
   const currentSection = () => {
-      return path[1];
+    if (path?.[1] === "banner") {
+      return path[2];
+    }
+    return path[1];
   };
-  
+
   const goToPage = (page) => {
     navigate(page, { replace: true });
   };
@@ -124,7 +127,7 @@ const CustomLayout = () => {
                 onClick: () => goToPage("/room"),
               },
               {
-                key: "sub1",
+                key: "banner",
                 icon: <BannerMenu />,
                 label: "Banner",
                 children: [
