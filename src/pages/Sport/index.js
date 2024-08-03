@@ -417,7 +417,7 @@ const SportClass = () => {
           onChange={onSearch}
           className="my-[16px] w-[40%]"
           size="large"
-          placeholder="Cari peserta disini . . ."
+          placeholder="Cari sport class disini . . ."
           prefix={<SearchIcon />}
         />
         <ChipWrapper>
