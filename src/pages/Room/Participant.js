@@ -20,8 +20,8 @@ const ParticipantRoom = () => {
   const { id } = useParams();
   const { data: dataDetail } = useGetRoomDetail(id);
   const [params, setParams] = useState({
-    name: '',
-    status: 'all'
+    name: "",
+    status: "all",
   });
   const {
     data: bookingList,
@@ -38,16 +38,16 @@ const ParticipantRoom = () => {
   const onSearch = (e) => {
     setParams({
       ...params,
-      name: e.target.value
-    })
-  }
+      name: e.target.value,
+    });
+  };
 
   const changeStatus = (e) => {
     setParams({
       ...params,
-      status: e
-    })
-  }
+      status: e,
+    });
+  };
 
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
@@ -305,9 +305,9 @@ const ParticipantRoom = () => {
             onClick={() => changeStatus("approved")}
           />
           <Chip
-            label={"Cancelled"}
-            active={params?.status === "cancelled"}
-            onClick={() => changeStatus("cancelled")}
+            label={"Rejected"}
+            active={params?.status === "rejected"}
+            onClick={() => changeStatus("rejected")}
           />
         </ChipWrapper>
       </SearchWrapper>

@@ -11,8 +11,17 @@ body {
   font-family: 'Montserrat', sans-serif !important;
 }
 
+.ant-input, .ant-picker, .ant-select {
+  min-height: 48px;
+}
+
 .ant-form-item-label {
   font-weight: 700;
+}
+
+.ant-input-affix-wrapper {
+  height: fit-content;
+  padding: 0px 4px;
 }
 
 * {

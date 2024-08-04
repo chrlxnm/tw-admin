@@ -170,9 +170,9 @@ const DetailSportClass = () => {
             onClick={() => setStatus("approved")}
           />
           <Chip
-            label={"Cancelled"}
-            active={status === "cancelled"}
-            onClick={() => setStatus("cancelled")}
+            label={"Rejected"}
+            active={status === "rejected"}
+            onClick={() => setStatus("rejected")}
           />
         </ChipWrapper>
       </SearchWrapper>

@@ -400,9 +400,9 @@ const RoomBanner = () => {
             onClick={() => setParams({ ...params, status: "approved" })}
           />
           <Chip
-            label={"Cancelled"}
-            active={params.status === "cancelled"}
-            onClick={() => setParams({ ...params, status: "cancelled" })}
+            label={"Rejected"}
+            active={params.status === "rejected"}
+            onClick={() => setParams({ ...params, status: "rejected" })}
           />
         </ChipWrapper>
       </SearchWrapper>

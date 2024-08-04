@@ -31,7 +31,7 @@ const ClassModal = ({
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
-  const {data: timeList} = useGetClassTimeList();
+  const { data: timeList } = useGetClassTimeList();
 
   const disableDate = (current) => {
     // Disable dates before today
@@ -181,6 +181,7 @@ const ClassModal = ({
                               placeholder="Pilih tanggal pemesanan"
                               size="large"
                               format="DD/MM/YYYY"
+                              className="mb-[24px]"
                               disabledDate={disableDate}
                               style={{ width: "100%" }}
                             />
@@ -191,16 +192,6 @@ const ClassModal = ({
                         </Space>
                       )
                     )}
-                    <div className="flex justify-end">
-                      <ButtonPrimary
-                        className="!w-fit"
-                        onClick={() => add()}
-                        block
-                        icon={<PlusOutlined />}
-                      >
-                        Tambah
-                      </ButtonPrimary>
-                    </div>
                   </>
                 )}
               </Form.List>
@@ -246,6 +237,7 @@ const ClassModal = ({
                                 style={{
                                   width: "100%",
                                 }}
+                                className="mb-[24px]"
                                 size="large"
                                 placeholder="Pilih waktu mulai"
                                 options={timeList}
@@ -258,16 +250,6 @@ const ClassModal = ({
                         </Space>
                       )
                     )}
-                    <div className="flex justify-end">
-                      <ButtonPrimary
-                        className="!w-fit"
-                        onClick={() => add()}
-                        block
-                        icon={<PlusOutlined />}
-                      >
-                        Tambah
-                      </ButtonPrimary>
-                    </div>
                   </>
                 )}
               </Form.List>
@@ -303,9 +285,9 @@ const ClassModal = ({
               getValueFromEvent={normFile}
             >
               {type === "detail" ? (
-                data?.images?.map((item)=> 
+                data?.images?.map((item) => (
                   <Image width={200} src={item?.url} />
-                )
+                ))
               ) : (
                 <Upload {...props} listType="picture-card">
                   <button

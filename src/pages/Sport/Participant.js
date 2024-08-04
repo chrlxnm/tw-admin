@@ -18,7 +18,7 @@ import useGetClassParticipantList from "hooks/useGetClassParticipantList";
 
 const ParticipantSportClass = () => {
   const { id } = useParams();
-  const { data: dataDetail } = useGetClassDetail(id);
+  const { data: dataDetail, fetchData } = useGetClassDetail(id);
   const [params, setParams] = useState({
     name: '',
     status: 'all'
@@ -74,6 +74,7 @@ const ParticipantSportClass = () => {
         message: "Berhasil melakukan Approve.",
       });
       fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -97,6 +98,7 @@ const ParticipantSportClass = () => {
         message: "Berhasil melakukan Reject.",
       });
       fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -299,9 +301,9 @@ const ParticipantSportClass = () => {
             onClick={() => changeStatus("approved")}
           />
           <Chip
-            label={"Cancelled"}
-            active={params?.status === "cancelled"}
-            onClick={() => changeStatus("cancelled")}
+            label={"Rejected"}
+            active={params?.status === "rejected"}
+            onClick={() => changeStatus("rejected")}
           />
         </ChipWrapper>
       </SearchWrapper>
