@@ -20,7 +20,7 @@ body {
 }
 
 .ant-input-affix-wrapper {
-  height: fit-content;
+  height: fit-content !important;
   padding: 0px 4px;
 }
 
