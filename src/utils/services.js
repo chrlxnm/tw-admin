@@ -36,10 +36,8 @@ twService.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Handle logout
-      const navigate = useNavigate();
-      // Perform logout operation (e.g., clear tokens)
-      // Redirect to login page
-      navigate('/login');
+      localStorage.clear();
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
