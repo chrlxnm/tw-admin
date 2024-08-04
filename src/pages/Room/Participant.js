@@ -186,7 +186,7 @@ const ParticipantRoom = () => {
     },
     {
       title: "Unit/Div",
-      dataIndex: "unit",
+      dataIndex: "unit_division",
       key: "unit",
     },
     {
@@ -206,8 +206,8 @@ const ParticipantRoom = () => {
     },
     {
       title: "Jumlah Peserta",
-      key: "participant",
-      dataIndex: "participant",
+      key: "occupancy",
+      dataIndex: "occupancy",
     },
     {
       title: "Status",
