@@ -18,7 +18,7 @@ import useGetRoomDetail from "hooks/useGetRoomDetail";
 const ParticipantRoom = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { data: dataDetail } = useGetRoomDetail(id);
+  const { data: dataDetail, fetchData } = useGetRoomDetail(id);
   const [params, setParams] = useState({
     name: "",
     status: "all",
@@ -79,6 +79,7 @@ const ParticipantRoom = () => {
         message: "Berhasil melakukan Approve.",
       });
       fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -102,6 +103,7 @@ const ParticipantRoom = () => {
         message: "Berhasil melakukan Reject.",
       });
       fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
