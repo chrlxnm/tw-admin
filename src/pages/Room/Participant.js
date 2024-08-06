@@ -71,7 +71,7 @@ const ParticipantRoom = () => {
   const onApprove = async (partId) => {
     setLoadingModal(true);
     try {
-      await twService.put(`rooms/${id}/participants/${partId}/approve`); // Replace with your API endpoint
+      await twService.post(`rooms/${id}/bookings/${partId}/approve`); // Replace with your API endpoint
       closeModalConfirm();
       setAlert({
         ...alert,
@@ -95,7 +95,7 @@ const ParticipantRoom = () => {
   const onReject = async (partId) => {
     setLoadingModal(true);
     try {
-      await twService.put(`schedules/${id}/participants/${partId}/reject`); // Replace with your API endpoint
+      await twService.post(`rooms/${id}/bookings/${partId}/reject`); // Replace with your API endpoint
       closeModalConfirm();
       setAlert({
         ...alert,
@@ -121,7 +121,7 @@ const ParticipantRoom = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin reject banner ini?",
+      content: "Apakah kamu yakin reject peserta ini?",
       onOk: () => onReject(id),
     });
   };
@@ -131,7 +131,7 @@ const ParticipantRoom = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin approve banner ini?",
+      content: "Apakah kamu yakin approve peserta ini?",
       onOk: () => onApprove(id),
     });
   };
