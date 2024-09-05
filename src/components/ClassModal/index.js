@@ -1,5 +1,4 @@
 import {
-  Button,
   DatePicker,
   Form,
   Image,
@@ -14,10 +13,15 @@ import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
 import { MinusCircleOutlined } from "@ant-design/icons";
 import { PlusOutlined } from "@ant-design/icons";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import dayjs from "dayjs";
+import { fetchFileAsBlob } from "utils";
 import moment from "moment";
 import styled from "styled-components";
 import twService from "utils/services";
 import useGetClassTimeList from "hooks/useGetClassTime";
+
+dayjs.extend(customParseFormat);
 
 const ClassModal = ({
   data,
@@ -39,6 +43,35 @@ const ClassModal = ({
   };
 
   useEffect(() => {
+    if (type === "edit") {
+      const imagePromise = fetchFileAsBlob(data?.images?.[0]?.url);
+      Promise.all([imagePromise])
+        .then(([imageFile]) => {
+          // Update state with the fetched files
+          setFileList([imageFile]);
+
+          // Now set the form values after both files are fetched
+          form.setFieldsValue({
+            ...data,
+            date: [dayjs(data.date, "YYYY-MM-DD")],
+            time: [data?.time],
+            images: [imageFile],
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+          // Handle errors: clear file lists and optionally set form fields to empty
+          setFileList([]);
+          form.setFieldsValue({
+            ...data,
+            date: [dayjs(data.date, "YYYY-MM-DD")],
+            time: [data?.time],
+            image: [],
+          });
+          // Optionally show an error message to the user
+        });
+    }
+
     if (visible) {
       document.body.style.overflow = "hidden";
     } else {
@@ -52,6 +85,7 @@ const ClassModal = ({
   const onFinish = async (payload) => {
     let body = {
       ...payload,
+      // id: type==='edit' ? data.id : undefined,
       quota: Number(payload.quota),
       date: payload.date
         ? payload.date.map((item) => item.format("YYYY-MM-DD"))
@@ -59,12 +93,19 @@ const ClassModal = ({
     };
     setLoading(true);
     try {
-      await twService.post(`schedules`, body); // Replace with your API endpoint
+      if (type === "edit") {
+        await twService.put(`schedules/${data?.id}`, body); // Replace with your API endpoint
+      } else {
+        await twService.post(`schedules`, body); // Replace with your API endpoint
+      }
       closeModal();
       setAlert({
         ...alert,
         visible: true,
-        message: "Pendaftaran class berhasil",
+        message:
+          type === "edit"
+            ? "Perubahan class berhasil"
+            : "Pendaftaran class berhasil",
       });
       refetch();
     } catch (error) {

@@ -154,6 +154,15 @@ const SportClass = () => {
     });
   };
 
+  const openEditModal = (data) => {
+    setModalProps({
+      ...modalProps,
+      visible: true,
+      type: "edit",
+      data: data,
+    });
+  };
+
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
     title: "",
@@ -251,6 +260,12 @@ const SportClass = () => {
           onClick={() => openDetailModal(record)}
         >
           <span style={{ marginLeft: "0.5rem" }}>Lihat Detail</span>
+        </div>
+        <div
+          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
+          onClick={() => openEditModal(record)}
+        >
+          <span style={{ marginLeft: "0.5rem" }}>Edit</span>
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}

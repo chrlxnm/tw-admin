@@ -36,6 +36,15 @@ const RoomBanner = () => {
     });
   };
 
+  const openEditModal = (data) => {
+    setModalProps({
+      ...modalProps,
+      visible: true,
+      type: "edit",
+      data: data,
+    });
+  };
+
   const openModal = (data) => {
     setModalProps({
       ...modalProps,
@@ -238,6 +247,12 @@ const RoomBanner = () => {
         </div>
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
+          onClick={() => openEditModal(record)}
+        >
+          <span style={{ marginLeft: "0.5rem" }}>Edit</span>
+        </div>
+        <div
+          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
           onClick={() => handleMenuClick(record, "status", record?.condition)}
         >
           <span style={{ marginLeft: "0.5rem" }}>
@@ -370,7 +385,7 @@ const RoomBanner = () => {
         refetch={fetchData}
       />
       <HeaderWrapper>
-        <Title>Banner Ruangan</Title>
+        <Title>Banner</Title>
         {localStorage.getItem("role")?.includes("maker") && (
           <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
         )}
@@ -379,7 +394,7 @@ const RoomBanner = () => {
         <Input
           className="my-[16px] w-[40%]"
           size="large"
-          placeholder="Cari banner ruangan disini . . ."
+          placeholder="Cari Banner disini . . ."
           onChange={(e) => setParams({ ...params, name: e.target.value })}
           prefix={<SearchIcon />}
         />

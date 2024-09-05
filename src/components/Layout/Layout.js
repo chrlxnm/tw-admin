@@ -130,18 +130,7 @@ const CustomLayout = () => {
                 key: "banner",
                 icon: <BannerMenu />,
                 label: "Banner",
-                children: [
-                  {
-                    key: "hero",
-                    label: "Hero Section",
-                    onClick: () => goToPage("/banner/hero"),
-                  },
-                  {
-                    key: "room-banner",
-                    label: "Banner Ruangan",
-                    onClick: () => goToPage("/banner/room-banner"),
-                  },
-                ],
+                onClick: () => goToPage("/banner"),
               },
             ]}
           />

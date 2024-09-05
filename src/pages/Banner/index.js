@@ -1,6 +1,5 @@
 import { BadgePrimary, BadgeSecondary } from "components/Badge";
 import { Button, Popover, Space, Table, message } from "antd";
-import { ButtonApprove, ButtonReject } from "components/Button";
 import React, { Fragment, useState } from "react";
 
 import { ReactComponent as CheckIcon } from "assets/icons/check-icon.svg";
@@ -8,80 +7,62 @@ import Chip from "components/Chip/Chip";
 import ConfirmationModal from "components/ConfirmationModal";
 import { ReactComponent as CrossIcon } from "assets/icons/cross-icon.svg";
 import { DownOutlined } from "@ant-design/icons";
+import HeroBannerModal from "components/HeroBannerModal";
 import { Input } from "components/Input";
-import RoomModal from "components/RoomModal";
 import { ReactComponent as SearchIcon } from "assets/icons/search.svg";
 import TWAlert from "components/Alert";
 import styled from "styled-components";
 import twService from "utils/services";
-import useGetRoomList from "hooks/useGetRoomList";
-import { useNavigate } from "react-router-dom";
+import useGetHeroBannerList from "hooks/useGetHeroList";
 
-const Room = () => {
+const BannerMenu = () => {
+  const [messageApi, contextHolder] = message.useMessage();
+  // eslint-disable-next-line no-unused-vars
+  const [loadingModal, setLoadingModal] = useState(false);
+  const [params, setParams] = useState({ name: "", page: 1, status: "all" });
+  const { data, loading, fetchData } = useGetHeroBannerList(params);
   const [modalProps, setModalProps] = useState({
     visible: false,
     type: "add",
-    data: undefined
+    data: undefined,
   });
+
+  const openDetailModal = (data) => {
+    setModalProps({
+      ...modalProps,
+      visible: true,
+      type: "detail",
+      data: data,
+    });
+  };
+
+  const openModal = (data) => {
+    setModalProps({
+      ...modalProps,
+      visible: true,
+      data: data,
+      type: "add",
+    });
+  };
+
   const [confirmModal, setConfirmModal] = useState({
     visible: false,
     title: "",
     content: "",
-    onOk: null,
+    onOk: () => {},
   });
-
-  const [params, setParams] = useState({
-    name: undefined,
-    status: "all",
-    page: 1,
-  });
-
-  const handleTableChange = (event) => {
-    setParams({
-      ...params,
-      page: event?.current,
-    });
-  };
-
-  const { data, loading, fetchDataList } = useGetRoomList(params);
-
-  const [messageApi, contextHolder] = message.useMessage();
-  const [loadingModal, setLoadingModal] = useState(false);
-
-  const onDelete = async (id) => {
-    setLoadingModal(true);
-    try {
-      await twService.delete(`rooms/${id}`); // Replace with your API endpoint
-      closeModalConfirm();
-      setAlert({
-        ...alert,
-        visible: true,
-        message: "Berhasil melakukan delete, menunggu approval checker.",
-      });
-      fetchDataList();
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content:
-          error?.response?.data?.message ||
-          "Terjadi kesalahan di sistem, silakan hubungi admin.",
-      });
-    } finally {
-      setLoadingModal(false);
-    }
-  };
 
   const onApprove = async (id) => {
     setLoadingModal(true);
     try {
-      await twService.post(`rooms/${id}/approve`); // Replace with your API endpoint
+      await twService.post(`banners/hero/${id}/approve`); // Replace with your API endpoint
       closeModalConfirm();
       setAlert({
         ...alert,
         visible: true,
         message: "Berhasil melakukan Approve.",
       });
-      fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -97,14 +78,14 @@ const Room = () => {
   const onReject = async (id) => {
     setLoadingModal(true);
     try {
-      await twService.post(`rooms/${id}/reject`); // Replace with your API endpoint
+      await twService.post(`banners/hero/${id}/reject`); // Replace with your API endpoint
       closeModalConfirm();
       setAlert({
         ...alert,
         visible: true,
         message: "Berhasil melakukan Reject.",
       });
-      fetchDataList();
+      fetchData();
     } catch (error) {
       messageApi.open({
         type: "error",
@@ -116,38 +97,13 @@ const Room = () => {
       setLoadingModal(false);
     }
   };
-
-  const fetchChangeStatus = async (id, type) => {
-    setLoadingModal(true);
-    try {
-      await twService.put(`rooms/${id}/${type}`); // Replace with your API endpoint
-      closeModalConfirm();
-      setAlert({
-        ...alert,
-        visible: true,
-        message: `Berhasil melakukan ${
-          type?.toLowerCase() === "activate" ? "aktivasi" : "deaktivasi"
-        }.`,
-      });
-      fetchDataList();
-    } catch (error) {
-      messageApi.open({
-        type: "error",
-        content:
-          error?.response?.data?.message ||
-          "Terjadi kesalahan di sistem, silakan hubungi admin.",
-      });
-    } finally {
-      setLoadingModal(false);
-    }
-  };
-
+  
   const openReject = (id) => {
     setConfirmModal({
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin reject ruangan ini?",
+      content: "Apakah kamu yakin reject banner ini?",
       onOk: () => onReject(id),
     });
   };
@@ -157,11 +113,43 @@ const Room = () => {
       ...confirmModal,
       visible: true,
       title: "Konfirmasi",
-      content: "Apakah kamu yakin approve ruangan ini?",
+      content: "Apakah kamu yakin approve banner ini?",
       onOk: () => onApprove(id),
     });
   };
 
+  const handleTableChange = (event) => {
+    setParams({
+      ...params,
+      page: event?.current,
+    });
+  };
+
+  const closeModalConfirm = () => {
+    setConfirmModal({
+      ...confirmModal,
+      visible: false,
+    });
+  };
+
+  const [alert, setAlert] = useState({
+    message: "",
+    visible: false,
+  });
+  
+  const handleMenuClick = (record, event, type = "") => {
+    switch (event) {
+      case "status":
+        openChangeStatus(record?.id, type);
+        return;
+      case "delete":
+        openDelete(record?.id);
+        return;
+      default:
+        return;
+    }
+  };
+  
   const openDelete = (id) => {
     setConfirmModal({
       ...confirmModal,
@@ -170,6 +158,29 @@ const Room = () => {
       content: "Apakah kamu yakin delete ruangan ini?",
       onOk: () => onDelete(id),
     });
+  };
+  
+  const onDelete = async (id) => {
+    setLoadingModal(true);
+    try {
+      await twService.delete(`banners/hero/${id}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: "Berhasil melakukan delete, menunggu approval checker.",
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
+    }
   };
 
   const openChangeStatus = (id, type) => {
@@ -187,65 +198,28 @@ const Room = () => {
         ),
     });
   };
-
-  const closeModalConfirm = () => {
-    setConfirmModal({
-      ...confirmModal,
-      visible: false,
-    });
-  };
-
-  const openModal = (data) => {
-    setModalProps({
-      ...modalProps,
-      visible: true,
-      data: data,
-      type: "add",
-    });
-  };
-
-  const openDetailModal = (data) => {
-    setModalProps({
-      ...modalProps,
-      visible: true,
-      type: "detail",
-      data: data,
-    });
-  };
-
-  const openEditModal = (data) => {
-    setModalProps({
-      ...modalProps,
-      visible: true,
-      type: "edit",
-      data: data,
-    });
-  };
-
-  const [alert, setAlert] = useState({
-    message: "",
-    visible: false,
-  });
-
-  const navigate = useNavigate();
-
-  const goToPage = (page) => {
-    navigate(page, { replace: true });
-  };
-
-  const handleMenuClick = (record, event, type = "") => {
-    switch (event) {
-      case "participant":
-        goToPage(`participant/${record?.id}`);
-        return;
-      case "status":
-        openChangeStatus(record?.id, type);
-        return;
-      case "delete":
-        openDelete(record?.id);
-        return;
-      default:
-        return;
+  const fetchChangeStatus = async (id, type) => {
+    setLoadingModal(true);
+    try {
+      await twService.put(`banners/hero/${id}/${type}`); // Replace with your API endpoint
+      closeModalConfirm();
+      setAlert({
+        ...alert,
+        visible: true,
+        message: `Berhasil melakukan ${
+          type?.toLowerCase() === "activate" ? "aktivasi" : "deaktivasi"
+        }.`,
+      });
+      fetchData();
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content:
+          error?.response?.data?.message ||
+          "Terjadi kesalahan di sistem, silakan hubungi admin.",
+      });
+    } finally {
+      setLoadingModal(false);
     }
   };
 
@@ -261,34 +235,12 @@ const Room = () => {
         >
           <span style={{ marginLeft: "0.5rem" }}>Lihat Detail</span>
         </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => openEditModal(record)}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Edit</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick(record, "participant")}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>Lihat Peserta</span>
-        </div>
-        <div
-          style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick(record, "status", record?.condition)}
-        >
-          <span style={{ marginLeft: "0.5rem" }}>
-            {record?.condition?.toLowerCase() !== "inactive"
-              ? "Inactive"
-              : "Active"}
-          </span>
-        </div>
 
         <div
           style={{ cursor: "pointer", marginTop: "2px", marginBottom: "2px" }}
-          onClick={() => handleMenuClick(record, "delete")}
+          onClick={() => handleMenuClick(record, "edit")}
         >
-          <span style={{ marginLeft: "0.5rem" }}>Hapus</span>
+          <span style={{ marginLeft: "0.5rem" }}>edit</span>
         </div>
       </div>
     );
@@ -296,15 +248,15 @@ const Room = () => {
 
   const columns = [
     {
-      title: "Nama Ruangan",
+      title: "Nama Hero Section",
       dataIndex: "name",
       key: "name",
       render: (text) => <p>{text}</p>,
     },
     {
-      title: "Kuota Peserta",
-      dataIndex: "quota",
-      key: "quota",
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
     },
     {
       title: "Kondisi",
@@ -389,7 +341,6 @@ const Room = () => {
           })
         }
       />
-
       <ConfirmationModal
         visible={confirmModal.visible}
         title={confirmModal.title}
@@ -398,18 +349,17 @@ const Room = () => {
         onCancel={closeModalConfirm}
         loading={loadingModal}
       />
-
-      <RoomModal
-        type={modalProps.type}
+      <HeroBannerModal
         alert={alert}
+        type={modalProps.type}
         setAlert={setAlert}
         visible={modalProps?.visible}
         data={modalProps?.data}
         onClose={() => setModalProps({ ...modalProps, visible: false })}
-        refetch={fetchDataList}
+        refetch={fetchData}
       />
       <HeaderWrapper>
-        <Title>Ruangan</Title>
+        <Title>Hero Banner</Title>
         {localStorage.getItem("role")?.includes("maker") && (
           <AddButton onClick={openModal}>+ Tambah Baru</AddButton>
         )}
@@ -419,7 +369,7 @@ const Room = () => {
           className="my-[16px] w-[40%]"
           size="large"
           onChange={(e) => setParams({ ...params, name: e.target.value })}
-          placeholder="Cari ruangan disini . . ."
+          placeholder="Cari Hero Banner disini . . ."
           prefix={<SearchIcon />}
         />
         <ChipWrapper>
@@ -460,7 +410,7 @@ const Room = () => {
   );
 };
 
-export default Room;
+export default BannerMenu;
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -496,4 +446,30 @@ const ChipWrapper = styled.div`
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
   align-items: center;
+`;
+
+const ButtonApprove = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #00aa5b;
+  border: 1px solid #d3d3d3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
+`;
+
+const ButtonReject = styled.div`
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: flex;
+  color: #fb2121;
+  border: 1px solid #d3d3d3;
+  font-family: Montserrat;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: white;
 `;

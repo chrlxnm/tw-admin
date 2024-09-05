@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
 import { PlusOutlined } from "@ant-design/icons";
+import { fetchFileAsBlob } from "utils";
 import styled from "styled-components";
 import twService from "utils/services";
 
@@ -21,6 +22,30 @@ const HeroBannerModal = ({
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
+    if (type === "edit") {
+      const imagePromise = fetchFileAsBlob(data?.images?.[0]?.url);
+      Promise.all([imagePromise])
+        .then(([imageFile]) => {
+          // Update state with the fetched files
+          setFileList([imageFile]);
+
+          // Now set the form values after both files are fetched
+          form.setFieldsValue({
+            ...data,
+            images: [imageFile],
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+          // Handle errors: clear file lists and optionally set form fields to empty
+          setFileList([]);
+          form.setFieldsValue({
+            ...data,
+            image: [],
+          });
+          // Optionally show an error message to the user
+        });
+    }
     if (visible) {
       document.body.style.overflow = "hidden";
     } else {
@@ -34,7 +59,11 @@ const HeroBannerModal = ({
   const onFinish = async (payload) => {
     setLoading(true);
     try {
-      await twService.post(`banners/room`, payload); // Replace with your API endpoint
+      if (type === "edit") {
+        await twService.put(`banners/room/${data.id}`, {...payload,type: 'hero'});
+      } else {
+        await twService.post(`banners/room`, payload);
+      }
       closeModal();
       setAlert({
         ...alert,
@@ -120,7 +149,7 @@ const HeroBannerModal = ({
             </Form.Item>
             <Form.Item
               label="Upload"
-              name="images"
+              name="image"
               valuePropName="fileList"
               getValueFromEvent={normFile}
             >
@@ -128,24 +157,24 @@ const HeroBannerModal = ({
                 <Image width={200} src={data?.images?.[0]?.url} />
               ) : (
                 <Upload {...props} listType="picture-card">
-                {fileList?.length < 1 ? (
-                  <button
-                    style={{
-                      border: 0,
-                      background: "none",
-                    }}
-                    type="button"
-                  >
-                    <PlusOutlined />
-                    <div
+                  {fileList?.length < 1 ? (
+                    <button
                       style={{
-                        marginTop: 8,
+                        border: 0,
+                        background: "none",
                       }}
+                      type="button"
                     >
-                      Upload
-                    </div>
-                  </button>
-                ) : null}
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </button>
+                  ) : null}
                 </Upload>
               )}
             </Form.Item>

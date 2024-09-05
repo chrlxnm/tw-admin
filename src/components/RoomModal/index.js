@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ButtonPrimary } from "components/Button";
 import { Input } from "components/Input";
 import { PlusOutlined } from "@ant-design/icons";
+import { fetchFileAsBlob } from "utils";
 import styled from "styled-components";
 import twService from "utils/services";
 
@@ -21,6 +22,35 @@ const RoomModal = ({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (type === "edit") {
+      const iconPromise = fetchFileAsBlob(data?.icon?.[0]?.url);
+      const imagePromise = fetchFileAsBlob(data?.images?.[0]?.url);
+      Promise.all([iconPromise, imagePromise])
+        .then(([iconFile, imageFile]) => {
+          // Update state with the fetched files
+          setFileList([iconFile]);
+          setImageList([imageFile]);
+
+          // Now set the form values after both files are fetched
+          form.setFieldsValue({
+            ...data,
+            icon: [iconFile],
+            images: [imageFile],
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+          // Handle errors: clear file lists and optionally set form fields to empty
+          setFileList([]);
+          setImageList([]);
+          form.setFieldsValue({
+            ...data,
+            icon: [],
+            image: [],
+          });
+          // Optionally show an error message to the user
+        });
+    }
     if (visible) {
       document.body.style.overflow = "hidden";
     } else {
@@ -34,11 +64,14 @@ const RoomModal = ({
   const onFinish = async (payload) => {
     let body = {
       ...payload,
-      icon: payload?.icon
-    }
+    };
     setLoading(true);
     try {
-      await twService.post(`rooms`, body); // Replace with your API endpoint
+      if (type === "edit") {
+        await twService.put(`rooms/${data.id}`, body);
+      } else {
+        await twService.post(`rooms`, body);
+      }
       closeModal();
       setAlert({
         ...alert,
@@ -86,7 +119,7 @@ const RoomModal = ({
     },
     fileList,
   };
-  
+
   const [imageList, setImageList] = useState([]);
   const propsImage = {
     onRemove: (file) => {

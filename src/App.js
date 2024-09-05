@@ -69,7 +69,7 @@ function App() {
           }
         />
         <Route
-          path="/banner/room-banner"
+          path="/banner"
           element={
             <PrivateRoute>
               <RoomBanner />
